@@ -7,1106 +7,832 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#18a55b" />
- 
-  <!-- ── БЕЗОПАСНОСТЬ ── -->
-  <!-- Запрет встраивания в iframe (кликджекинг) -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Безопасность -->
   <meta http-equiv="X-Frame-Options" content="DENY" />
-  <!-- Политика безопасности контента: только свои ресурсы -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; frame-ancestors 'none';" />
-  <!-- Запрет сниффинга MIME-типов -->
+        content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; frame-ancestors 'none'; connect-src 'self';" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <!-- Запрет передачи referrer на внешние сайты -->
   <meta name="referrer" content="no-referrer" />
-  <!-- Запрет индексации (меню только для посетителей, не для поисковиков) -->
   <meta name="robots" content="noindex, nofollow" />
-  <!-- Запрет кеширования устаревшей версии -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
- 
+
   <title>ALAQAI — Электронное меню</title>
   <style>
     /* ── ЗАЩИТА КОНТЕНТА ── */
-    /* Запрет выделения текста */
-    body {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    /* Разрешить выделение только в поиске */
-    #searchInput {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      user-select: text;
-    }
-    /* Запрет перетаскивания изображений */
-    img {
-      -webkit-user-drag: none;
-      user-drag: none;
-      pointer-events: none;
-    }
- 
+    body { -webkit-user-select:none; -moz-user-select:none; user-select:none; }
+    #searchInput { -webkit-user-select:text; -moz-user-select:text; user-select:text; }
+    img { -webkit-user-drag:none; user-drag:none; pointer-events:none; }
+
     :root {
-      --mint: #c8f7ef;
-      --green: #18a55b;
-      --green-dark: #118548;
-      --text: #234;
-      --card: #ffffff;
-      --bg: #f7f7f5;
-      --border: #d9d9d9;
-      --shadow: 0 10px 24px rgba(0,0,0,.08);
-      --radius: 22px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-left: env(safe-area-inset-left, 0px);
-      --safe-right: env(safe-area-inset-right, 0px);
+      --mint:#c8f7ef; --green:#18a55b; --green-dark:#118548;
+      --text:#234; --card:#fff; --bg:#f7f7f5; --border:#d9d9d9;
+      --shadow:0 10px 24px rgba(0,0,0,.08); --radius:22px;
+      --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+      --safe-left:env(safe-area-inset-left,0px); --safe-right:env(safe-area-inset-right,0px);
     }
- 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-    }
- 
-    /* ── TOPBAR ── */
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(255,255,255,.92);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(0,0,0,.06);
-      padding-top: var(--safe-top);
-    }
- 
-    .topbar-inner {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 10px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
- 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
- 
-    .brand-logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      object-fit: cover;
-      background: var(--mint);
-      border: 1px solid rgba(0,0,0,.06);
-      flex-shrink: 0;
-    }
- 
-    .brand h1 {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1;
-      color: var(--green);
-    }
- 
-    .brand p {
-      margin: 3px 0 0;
-      font-size: 12px;
-      color: #4a6;
-    }
- 
-    .social-links {
-      display: flex;
-      gap: 7px;
-      align-items: center;
-      flex-shrink: 0;
-    }
- 
-    .social-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      border-radius: 12px;
-      padding: 8px 11px;
-      font-size: 13px;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      touch-action: manipulation;
-      white-space: nowrap;
-      transition: opacity .2s;
-      line-height: 1;
-    }
- 
-    .social-btn:active { opacity: .75; }
-    @media (hover: hover) { .social-btn:hover { opacity: .85; } }
- 
-    .social-btn.instagram {
-      background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
-      color: #fff;
-    }
- 
-    .social-btn.gis {
-      background: #1a8c3e;
-      color: #fff;
-    }
- 
-    .social-btn svg {
-      flex-shrink: 0;
-    }
- 
-    /* Скрываем текст ссылок на очень маленьких экранах */
-    @media (max-width: 480px) {
-      .social-btn span { display: none; }
-      .social-btn { padding: 8px; border-radius: 10px; }
-    }
- 
-    .controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex: 1;
-      min-width: 0;
-    }
- 
-    .search {
-      flex: 1;
-      min-width: 0;
-      position: relative;
-    }
- 
-    .search input {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 11px 14px;
-      font-size: 16px; /* 16px предотвращает zoom на iOS */
-      outline: none;
-      background: #fff;
-      -webkit-appearance: none;
-      appearance: none;
-    }
- 
-    .search input:focus {
-      border-color: var(--green);
-    }
- 
-    .btn {
-      border: none;
-      background: var(--green);
-      color: #fff;
-      border-radius: 14px;
-      padding: 11px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background .2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-      -webkit-appearance: none;
-      appearance: none;
-      touch-action: manipulation;
-    }
- 
-    .btn:active { background: var(--green-dark); }
-    @media (hover: hover) { .btn:hover { background: var(--green-dark); } }
- 
-    /* ── HERO ── */
-    .hero {
-      background: linear-gradient(180deg, var(--mint), #def9f3);
-      padding: 18px 16px 12px;
-      border-bottom: 1px solid rgba(0,0,0,.06);
-    }
- 
-    .hero-inner {
-      max-width: 1240px;
-      margin: 0 auto;
-    }
- 
-    .hero-card {
-      border-radius: 24px;
-      padding: 16px 18px;
-      background: rgba(255,255,255,.55);
-      box-shadow: var(--shadow);
-    }
- 
-    .hero-title {
-      margin: 0 0 4px;
-      color: var(--green);
-      font-size: clamp(24px, 5vw, 46px);
-      line-height: 1;
-    }
- 
-    .hero-subtitle {
-      margin: 0;
-      font-size: 15px;
-      color: #2f7a4d;
-    }
- 
-    .schedule {
-      margin-top: 10px;
-      display: inline-block;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.06);
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--green);
-    }
- 
-    /* ── CATEGORY CHIPS ── */
-    .category-bar-wrap {
-      max-width: 1240px;
-      margin: 12px auto 0;
-      position: relative;
-    }
- 
-    .category-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 2px 0 10px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
- 
-    .category-bar::-webkit-scrollbar { display: none; }
- 
-    .chip {
-      scroll-snap-align: start;
-      white-space: nowrap;
-      text-decoration: none;
-      color: var(--green);
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 700;
-      font-size: 13px;
-      flex-shrink: 0;
-      touch-action: manipulation;
-      transition: background .15s, color .15s;
-    }
- 
-    .chip:active,
-    .chip.active-chip {
-      background: var(--green);
-      color: #fff;
-      border-color: var(--green);
-    }
- 
-    /* ── LAYOUT ── */
-    .layout {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 16px 16px calc(80px + var(--safe-bottom));
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 16px;
-    }
- 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      position: sticky;
-      top: 80px;
-      align-self: start;
-      background: #fff;
-      border-radius: 20px;
-      padding: 14px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(0,0,0,.05);
-      max-height: calc(100vh - 100px);
-      overflow-y: auto;
-      overflow-x: hidden;
-      scrollbar-width: thin;
-    }
- 
-    .sidebar h3 {
-      margin: 0 0 10px;
-      color: var(--green);
-      font-size: 16px;
-    }
- 
-    .sidebar a {
-      display: block;
-      padding: 9px 10px;
-      border-radius: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 13px;
-      line-height: 1.3;
-    }
- 
-    .sidebar a.active {
-      background: rgba(24,165,91,.10);
-      color: var(--green-dark);
-      font-weight: 700;
-    }
- 
-    /* ── CONTENT ── */
-    .content { min-width: 0; }
- 
-    .section { margin-bottom: 28px; }
- 
-    .section-title {
-      margin: 0 0 12px;
-      color: var(--green);
-      font-size: clamp(22px, 3vw, 32px);
-    }
- 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
- 
-    /* ── CARD ── */
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(0,0,0,.05);
-      transition: transform .18s ease, box-shadow .18s ease;
-    }
- 
-    @media (hover: hover) {
-      .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 16px 30px rgba(0,0,0,.10);
+    @media (prefers-color-scheme:dark) {
+      :root {
+        --bg:#0f0f0e; --card:#1c1c1a; --text:#e8e4dc; --border:#2e2e2a;
+        --mint:#0d3028; --green:#22c46c; --green-dark:#1aaa5a;
+        --shadow:0 10px 24px rgba(0,0,0,.4);
       }
+      .topbar { background:rgba(15,15,14,.94) !important; border-bottom-color:rgba(255,255,255,.06) !important; }
+      .hero { background:linear-gradient(180deg,#0d3028,#0a2820) !important; border-bottom-color:rgba(255,255,255,.06) !important; }
+      .hero-card { background:rgba(255,255,255,.04) !important; }
+      .hero-subtitle { color:#5db888 !important; }
+      .schedule { background:#1c1c1a !important; color:var(--green) !important; border-color:rgba(255,255,255,.08) !important; }
+      .sidebar { background:#1c1c1a !important; border-color:rgba(255,255,255,.05) !important; }
+      .sidebar a { color:var(--text) !important; }
+      .chip { background:#1c1c1a !important; color:var(--green) !important; border-color:rgba(255,255,255,.08) !important; }
+      .chip:active, .chip.active-chip { background:var(--green) !important; color:#0f0f0e !important; }
+      .footer-box { background:#1c1c1a !important; border-color:rgba(255,255,255,.05) !important; }
+      .price-filter-bar { background:#1c1c1a !important; border-color:rgba(255,255,255,.06) !important; }
+      .pf-btn { background:#252523 !important; color:var(--text) !important; border-color:rgba(255,255,255,.1) !important; }
+      .pf-btn.active { background:var(--green) !important; color:#0f0f0e !important; border-color:var(--green) !important; }
+      .search input { background:#1c1c1a !important; color:var(--text) !important; border-color:var(--border) !important; }
+      .search input::placeholder { color:#556 !important; }
+      .mobile-cat-bar { background:rgba(15,15,14,.96) !important; border-top-color:rgba(255,255,255,.08) !important; }
+      .offline-banner { display:block !important; }
+      .table-badge { background:#1c1c1a !important; border-color:rgba(255,255,255,.08) !important; color:var(--green) !important; }
+      dialog { background:#1c1c1a !important; color:var(--text) !important; border-color:rgba(255,255,255,.1) !important; }
+      .modal-close { background:#252523 !important; color:var(--text) !important; }
+      .modal-badge { background:#252523 !important; }
     }
- 
-    .image-wrap {
-      aspect-ratio: 1 / 1;
-      background: #eee;
-      overflow: hidden;
-      position: relative;
-    }
- 
-    .image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      /* улучшение рендера на мобиле */
-      will-change: auto;
-      image-rendering: -webkit-optimize-contrast;
-    }
- 
-    .badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255,255,255,.92);
-      border-radius: 999px;
-      padding: 5px 9px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--green-dark);
-      border: 1px solid rgba(0,0,0,.06);
-    }
- 
-    .card-body { padding: 12px 12px 14px; }
- 
-    .price {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--green);
-      margin-bottom: 6px;
-    }
- 
-    .name {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.25;
-    }
- 
-    .desc {
-      margin: 6px 0 0;
-      color: #667;
-      font-size: 13px;
-      line-height: 1.4;
-    }
- 
-    /* ── EMPTY STATE ── */
-    .empty {
-      background: #fff;
-      border-radius: 20px;
-      padding: 22px;
-      border: 1px dashed #cfd7d2;
-      text-align: center;
-      color: #667;
-      display: none;
-    }
- 
-    /* ── MOBILE BOTTOM CATEGORY BAR ── */
-    .mobile-cat-bar {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 30;
-      background: rgba(255,255,255,.96);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0,0,0,.08);
-      padding: 8px 12px calc(8px + var(--safe-bottom));
-    }
- 
-    .mobile-cat-scroll {
-      display: flex;
-      gap: 7px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
- 
-    .mobile-cat-scroll::-webkit-scrollbar { display: none; }
- 
-    .mobile-cat-scroll .chip {
-      font-size: 12px;
-      padding: 7px 12px;
-    }
- 
-    /* ── FLOATING BUTTONS ── */
-    .floating {
-      position: fixed;
-      right: max(16px, var(--safe-right));
-      bottom: calc(70px + var(--safe-bottom));
-      z-index: 29;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
- 
-    .floating .btn {
-      box-shadow: var(--shadow);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      font-size: 18px;
-      padding: 0;
-    }
- 
-    /* ── FOOTER ── */
-    .footer {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 0 16px 30px;
-      color: #678;
-      font-size: 14px;
-    }
- 
-    .footer-box {
-      background: #fff;
-      border-radius: 20px;
-      padding: 16px;
-      border: 1px solid rgba(0,0,0,.05);
-      box-shadow: var(--shadow);
-    }
- 
-    /* ── BREAKPOINTS ── */
- 
-    /* Планшет */
-    @media (max-width: 1100px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-      .sidebar { display: none; }
-      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
- 
-    /* Мобильный ландшафт / маленький планшет */
-    @media (max-width: 768px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-      .mobile-cat-bar { display: block; }
-      .floating { bottom: calc(64px + var(--safe-bottom)); }
-      .layout { padding-bottom: calc(72px + var(--safe-bottom)); }
-      .hero { padding: 14px 14px 10px; }
-      .topbar-inner { padding: 8px 14px; flex-wrap: nowrap; }
-      .brand p { display: none; }
-    }
- 
-    /* Мобильный портрет */
-    @media (max-width: 480px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-      .name { font-size: 13px; }
-      .price { font-size: 14px; }
-      .desc { font-size: 12px; }
-      .card-body { padding: 9px 9px 11px; }
-      .badge { font-size: 10px; padding: 4px 7px; }
-      .brand-logo { width: 38px; height: 38px; }
-      .brand h1 { font-size: 18px; }
-      .search input { padding: 10px 12px; }
-      .btn { padding: 10px 11px; font-size: 13px; }
-    }
- 
-    /* Очень маленькие (SE, старые Android) */
-    @media (max-width: 360px) {
-      .grid { grid-template-columns: 1fr; gap: 10px; }
-      .topbar-inner { gap: 7px; }
-    }
+
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html{scroll-behavior:smooth;}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+    .offline-banner{display:none;background:#f59e0b;color:#fff;text-align:center;padding:7px 16px;font-size:13px;font-weight:700;position:sticky;top:0;z-index:100;}
+
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);padding-top:var(--safe-top);}
+    .topbar-inner{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .brand-logo{width:46px;height:46px;border-radius:12px;object-fit:cover;background:var(--mint);border:1px solid rgba(0,0,0,.06);flex-shrink:0;}
+    .brand h1{margin:0;font-size:22px;line-height:1;color:var(--green);}
+    .brand p{margin:3px 0 0;font-size:12px;color:#4a6;}
+    .social-links{display:flex;gap:7px;align-items:center;flex-shrink:0;}
+    .social-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;border-radius:12px;padding:8px 11px;font-size:13px;font-weight:700;border:none;cursor:pointer;touch-action:manipulation;white-space:nowrap;transition:opacity .2s;line-height:1;}
+    .social-btn:active{opacity:.75;}
+    @media(hover:hover){.social-btn:hover{opacity:.85;}}
+    .social-btn.instagram{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);color:#fff;}
+    .social-btn.gis{background:#1a8c3e;color:#fff;}
+    .social-btn svg{flex-shrink:0;}
+    @media(max-width:480px){.social-btn span{display:none;}.social-btn{padding:8px;border-radius:10px;}}
+
+    .controls{display:flex;gap:8px;align-items:center;flex:1;min-width:0;}
+    .search{flex:1;min-width:0;position:relative;}
+    .search input{width:100%;border:1px solid var(--border);border-radius:14px;padding:11px 14px;font-size:16px;outline:none;background:#fff;-webkit-appearance:none;appearance:none;color:var(--text);}
+    .search input:focus{border-color:var(--green);}
+    .btn{border:none;background:var(--green);color:#fff;border-radius:14px;padding:11px 14px;font-size:14px;cursor:pointer;transition:background .2s;white-space:nowrap;flex-shrink:0;-webkit-appearance:none;touch-action:manipulation;}
+    .btn:active{background:var(--green-dark);}
+    @media(hover:hover){.btn:hover{background:var(--green-dark);}}
+
+    /* Переключатель языка */
+    .lang-toggle{display:flex;background:rgba(0,0,0,.06);border-radius:10px;padding:3px;flex-shrink:0;gap:2px;}
+    .lang-btn{border:none;background:transparent;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text);transition:background .15s,color .15s;}
+    .lang-btn.active{background:var(--green);color:#fff;}
+    @media(prefers-color-scheme:dark){.lang-toggle{background:rgba(255,255,255,.08);}}
+
+    .hero{background:linear-gradient(180deg,var(--mint),#def9f3);padding:18px 16px 12px;border-bottom:1px solid rgba(0,0,0,.06);}
+    .hero-inner{max-width:1240px;margin:0 auto;}
+    .hero-card{border-radius:24px;padding:16px 18px;background:rgba(255,255,255,.55);box-shadow:var(--shadow);}
+    .hero-title{margin:0 0 4px;color:var(--green);font-size:clamp(24px,5vw,46px);line-height:1;}
+    .hero-subtitle{margin:0;font-size:15px;color:#2f7a4d;}
+    .hero-meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .schedule{display:inline-block;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,.06);font-weight:700;font-size:13px;color:var(--green);}
+    .table-badge{display:none;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,.06);font-weight:700;font-size:13px;color:var(--green);}
+    .table-badge.visible{display:inline-block;}
+
+    /* Фильтр по цене */
+    .price-filter-bar{background:#fff;border-bottom:1px solid rgba(0,0,0,.06);padding:8px 16px;}
+    .price-filter-inner{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;}
+    .price-filter-inner::-webkit-scrollbar{display:none;}
+    .pf-label{font-size:12px;font-weight:700;color:#667;white-space:nowrap;flex-shrink:0;}
+    .pf-btn{border:1px solid rgba(0,0,0,.1);background:#f7f7f5;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .15s,color .15s,border-color .15s;color:var(--text);}
+    .pf-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
+
+    .category-bar-wrap{max-width:1240px;margin:12px auto 0;position:relative;}
+    .category-bar{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+    .category-bar::-webkit-scrollbar{display:none;}
+    .chip{scroll-snap-align:start;white-space:nowrap;text-decoration:none;color:var(--green);background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:999px;padding:9px 14px;font-weight:700;font-size:13px;flex-shrink:0;touch-action:manipulation;transition:background .15s,color .15s;}
+    .chip:active,.chip.active-chip{background:var(--green);color:#fff;border-color:var(--green);}
+
+    .layout{max-width:1240px;margin:0 auto;padding:16px 16px calc(80px + var(--safe-bottom));display:grid;grid-template-columns:240px 1fr;gap:16px;}
+    .sidebar{position:sticky;top:80px;align-self:start;background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.05);max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin;}
+    .sidebar h3{margin:0 0 10px;color:var(--green);font-size:16px;}
+    .sidebar a{display:block;padding:9px 10px;border-radius:10px;color:var(--text);text-decoration:none;font-size:13px;line-height:1.3;}
+    .sidebar a.active{background:rgba(24,165,91,.10);color:var(--green-dark);font-weight:700;}
+    .content{min-width:0;}
+    .section{margin-bottom:28px;}
+    .section-title{margin:0 0 12px;color:var(--green);font-size:clamp(22px,3vw,32px);}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+    .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.05);transition:transform .18s ease,box-shadow .18s ease;cursor:pointer;}
+    @media(hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 16px 30px rgba(0,0,0,.10);}}
+    .image-wrap{aspect-ratio:1/1;background:#eee;overflow:hidden;position:relative;}
+    .image-wrap picture{display:block;width:100%;height:100%;}
+    .image-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+    .badge{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;color:var(--green-dark);border:1px solid rgba(0,0,0,.06);}
+    .card-body{padding:12px 12px 14px;}
+    .price{font-size:16px;font-weight:800;color:var(--green);margin-bottom:6px;}
+    .name{margin:0;font-size:15px;line-height:1.25;}
+    .desc{margin:6px 0 0;color:#667;font-size:13px;line-height:1.4;}
+    @media(prefers-color-scheme:dark){.desc{color:#889;}.badge{background:rgba(28,28,26,.9);color:var(--green);border-color:rgba(255,255,255,.08);}}
+    .empty{background:#fff;border-radius:20px;padding:22px;border:1px dashed #cfd7d2;text-align:center;color:#667;display:none;}
+
+    /* Скелетоны при загрузке */
+    .skeleton{background:linear-gradient(90deg,var(--border) 25%,rgba(255,255,255,.4) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+    @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+    @media(prefers-color-scheme:dark){.skeleton{background:linear-gradient(90deg,#2a2a28 25%,rgba(255,255,255,.06) 50%,#2a2a28 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}}
+    .skel-card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(0,0,0,.05);}
+    .skel-img{aspect-ratio:1/1;}
+    .skel-body{padding:12px;}
+    .skel-line{height:14px;border-radius:7px;margin-bottom:8px;}
+    .skel-line.short{width:60%;}
+    .skel-line.med{width:80%;}
+    .skel-line.long{width:95%;}
+
+    /* Модальное окно */
+    dialog{border:1px solid rgba(0,0,0,.1);border-radius:24px;padding:0;background:#fff;max-width:min(520px,94vw);width:100%;box-shadow:0 24px 60px rgba(0,0,0,.18);overflow:hidden;}
+    dialog::backdrop{background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+    .modal-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;pointer-events:none;}
+    .modal-body{padding:16px 18px 20px;}
+    .modal-badge{display:inline-block;background:#f0faf5;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--green-dark);margin-bottom:10px;}
+    .modal-name{margin:0 0 6px;font-size:20px;font-weight:800;color:var(--text);}
+    .modal-desc{margin:0 0 12px;font-size:14px;color:#667;line-height:1.5;}
+    .modal-price{font-size:24px;font-weight:800;color:var(--green);}
+    .modal-close{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+    .modal-wrap{position:relative;}
+    @media(prefers-color-scheme:dark){.modal-desc{color:#889;}.modal-badge{background:#1a2e22;color:var(--green);}}
+
+    .mobile-cat-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid rgba(0,0,0,.08);padding:8px 12px calc(8px + var(--safe-bottom));}
+    .mobile-cat-scroll{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+    .mobile-cat-scroll::-webkit-scrollbar{display:none;}
+    .mobile-cat-scroll .chip{font-size:12px;padding:7px 12px;}
+    .floating{position:fixed;right:max(16px,var(--safe-right));bottom:calc(70px + var(--safe-bottom));z-index:29;display:flex;flex-direction:column;gap:8px;}
+    .floating .btn{box-shadow:var(--shadow);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;font-size:18px;padding:0;}
+    .footer{max-width:1240px;margin:0 auto;padding:0 16px 30px;color:#678;font-size:14px;}
+    .footer-box{background:#fff;border-radius:20px;padding:16px;border:1px solid rgba(0,0,0,.05);box-shadow:var(--shadow);}
+
+    .toast{position:fixed;bottom:calc(140px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:#1c1c1a;color:#fff;border-radius:14px;padding:12px 20px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:50;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    @media(prefers-color-scheme:dark){.toast{background:#e8e4dc;color:#0f0f0e;}}
+    .modal-views{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#889;margin-top:8px;}
+    @media(prefers-color-scheme:dark){.modal-views{color:#556;}}
+
+    /* Уведомление PWA install */
+    .install-prompt{display:none;position:fixed;bottom:calc(72px + var(--safe-bottom));left:16px;right:16px;background:var(--green);color:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(24,165,91,.4);z-index:40;align-items:center;gap:10px;}
+    .install-prompt.visible{display:flex;}
+    .install-prompt p{margin:0;font-size:14px;font-weight:600;flex:1;}
+    .install-btn{border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .install-dismiss{border:none;background:transparent;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:0;line-height:1;}
+
+    @media(max-width:1100px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    @media(max-width:768px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}.mobile-cat-bar{display:block;}.floating{bottom:calc(64px + var(--safe-bottom));}.layout{padding-bottom:calc(72px + var(--safe-bottom));}.hero{padding:14px 14px 10px;}.topbar-inner{padding:8px 14px;flex-wrap:nowrap;}.brand p{display:none;}}
+    @media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.name{font-size:13px;}.price{font-size:14px;}.desc{font-size:12px;}.card-body{padding:9px 9px 11px;}.badge{font-size:10px;padding:4px 7px;}.brand-logo{width:38px;height:38px;}.brand h1{font-size:18px;}.search input{padding:10px 12px;}.btn{padding:10px 11px;font-size:13px;}.lang-toggle{display:none;}}
+    @media(max-width:360px){.grid{grid-template-columns:1fr;gap:10px;}.topbar-inner{gap:7px;}}
   </style>
 </head>
 <body>
- 
-  <header class="topbar" id="top">
-    <div class="topbar-inner">
-      <div class="brand">
-        <img class="brand-logo" src="images/logo.png" alt="ALAQAI"
-             onerror="this.src='images/1.jpg'" loading="eager" />
-        <div>
-          <h1>ALAQAI</h1>
-          <p>Балалардың ойын-сауық орталығы</p>
-        </div>
-      </div>
-      <div class="social-links">
-        <a class="social-btn instagram"
-           href="https://www.instagram.com/alaqai_maugli_dostar"
-           target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-            <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-          </svg>
-          <span>Instagram</span>
-        </a>
-        <a class="social-btn gis"
-           href="https://2gis.kz/astana/search/Alaqai/firm/70000001078776059/71.464128%2C51.141387?m=71.596503%2C51.105703%2F12.55"
-           target="_blank" rel="noopener noreferrer" aria-label="2GIS">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-          <span>2GIS</span>
-        </a>
-      </div>
-      <div class="controls">
-        <div class="search">
-          <input id="searchInput" type="search" autocomplete="off" autocorrect="off"
-                 spellcheck="false" placeholder="Поиск блюда..." />
-        </div>
-        <button class="btn" id="showAllBtn">Всё</button>
+
+<div class="offline-banner" id="offlineBanner">⚠️ Нет подключения к интернету — показываем кешированное меню</div>
+
+<header class="topbar" id="top">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img class="brand-logo" src="images/logo.png" alt="ALAQAI"
+           onerror="this.src='images/1.jpg'" loading="eager" />
+      <div>
+        <h1>ALAQAI</h1>
+        <p>Балалардың ойын-сауық орталығы</p>
       </div>
     </div>
-  </header>
- 
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-card">
-        <h2 class="hero-title">Электронное меню</h2>
-        <p class="hero-subtitle">ALAQAI — Балалардың ойын-сауық орталығы</p>
-        <div class="schedule">Күн сайын 11:00–22:30 · Ежедневно без выходных</div>
-      </div>
-      <div class="category-bar-wrap">
-        <nav class="category-bar" id="categoryBar"></nav>
-      </div>
+    <div class="social-links">
+      <a class="social-btn instagram"
+         href="https://www.instagram.com/alaqai_maugli_dostar"
+         target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span>Instagram</span>
+      </a>
+      <a class="social-btn gis"
+         href="https://2gis.kz/astana/search/Alaqai/firm/70000001078776059/71.464128%2C51.141387?m=71.596503%2C51.105703%2F12.55"
+         target="_blank" rel="noopener noreferrer" aria-label="2GIS">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        <span>2GIS</span>
+      </a>
     </div>
-  </section>
- 
-  <main class="layout">
-    <aside class="sidebar">
-      <h3>Категории</h3>
-      <nav id="sidebarNav"></nav>
-    </aside>
-    <section class="content">
-      <div id="menuSections"></div>
-      <div class="empty" id="emptyState">Ничего не найдено по вашему запросу.</div>
-    </section>
-  </main>
- 
-  <!-- Мобильная нижняя панель категорий -->
-  <nav class="mobile-cat-bar" id="mobileCatBar">
-    <div class="mobile-cat-scroll" id="mobileCatScroll"></div>
-  </nav>
- 
-  <!-- Кнопка наверх -->
-  <div class="floating">
-    <button class="btn" id="scrollTopBtn" aria-label="Наверх" title="Наверх">↑</button>
+    <div class="lang-toggle" id="langToggle">
+      <button class="lang-btn active" data-lang="ru" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" data-lang="kz" onclick="setLang('kz')">KZ</button>
+    </div>
+    <div class="controls">
+      <div class="search">
+        <input id="searchInput" type="search" autocomplete="off" autocorrect="off"
+               spellcheck="false" placeholder="Поиск блюда..." />
+      </div>
+      <button class="btn" id="showAllBtn">Всё</button>
+    </div>
   </div>
- 
-  <footer class="footer">
-    <div class="footer-box">
-      <strong>ALAQAI</strong> — детский развлекательный центр<br>
-      Тауелсиздик 32 · +7 700 497 9000<br>
-      <small>Фото блюд: поместите файлы <code>1.jpg</code> … <code>185.jpg</code> в папку <code>images/</code></small>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-card">
+      <h2 class="hero-title" id="heroTitle">Электронное меню</h2>
+      <p class="hero-subtitle" id="heroSubtitle">ALAQAI — Балалардың ойын-сауық орталығы</p>
+      <div class="hero-meta">
+        <div class="schedule" id="heroSchedule">Күн сайын 11:00–22:30 · Ежедневно без выходных</div>
+        <div class="table-badge" id="tableBadge"></div>
+      </div>
     </div>
-  </footer>
- 
-  <script>
-    const categories = [
-      'Салаты',
-      'Детское меню',
-      'Первые блюда',
-      'Вторые блюда',
-      'Паста',
-      'Стейки',
-      'Уйгурские блюда',
-      'Шашлык',
-      'Блюда для компаний',
-      'Пицца',
-      'Бургеры',
-      'Гарниры',
-      'Баскеты',
-      'Соусы',
-      'Суши/Роллы',
-      'Чай',
-      'Молочный коктейль',
-      'Бабл Ти',
-      'Напитки',
-      'Шоколад',
-      'Лимонады',
-      'Десерты'
-    ];
- 
-    const menuItems = [
-  // САЛАТЫ
-  { image: 1, category: 'Салаты', name: 'Свежий салат', price: '1930 ₸', description: 'Хрустящая смесь свежих овощей — огурцы, помидоры, болгарский перец и зелень, заправленные лёгким маслом.' },
-  { image: 2, category: 'Салаты', name: 'Ачичук', price: '1890 ₸', description: 'Узбекская классика: сочные томаты с тонко нарезанным луком и специями — простой, но невероятно освежающий салат.' },
-  { image: 3, category: 'Салаты', name: 'Цезарь с курицей', price: '2980 ₸', description: 'Хрустящие листья романо, нежное куриное филе, перепелиные яйца, черри и крутоны под фирменным соусом цезарь.' },
-  { image: 4, category: 'Салаты', name: 'Гнездо глухаря', price: '2780 ₸', description: 'Картофельная соломка «гнёздышком», сочная начинка из мяса, яйца и зелени — нарядное и сытное блюдо.' },
-  { image: 5, category: 'Салаты', name: 'Хрустящий баклажан', price: '2920 ₸', description: 'Обжаренные до золотистой корочки кусочки баклажана с пряными специями, чесноком и свежей зеленью.' },
-  { image: 6, category: 'Салаты', name: 'Салат со свёклой и апельсином', price: '2920 ₸', description: 'Запечённая свёкла, сочный апельсин, сливочный сыр и кедровые орешки — яркое сочетание сладкого и кислого.' },
-  { image: 7, category: 'Салаты', name: 'Фрутовая нарезка', price: '4380 ₸', description: 'Ассорти свежих сезонных фруктов: виноград, киви, апельсин, груша и другие. Идеально для праздничного стола.' },
-  // ДЕТСКОЕ МЕНЮ
-  { image: 8, category: 'Детское меню', name: 'Цветные детские пельмени', price: '2290 ₸', description: 'Яркие разноцветные пельмени с нежной начинкой — маленькие гурманы будут в восторге!' },
-  { image: 9, category: 'Детское меню', name: 'Пельмени', price: '2330 ₸', description: 'Классические домашние пельмени с сочной мясной начинкой, поданные с бульоном.' },
-  { image: 10, category: 'Детское меню', name: 'Куриный суп', price: '2330 ₸', description: 'Лёгкий прозрачный бульон с нежным куриным мясом и овощами — согревает и насыщает.' },
-  { image: 11, category: 'Детское меню', name: 'Суп с фрикадельками', price: '2330 ₸', description: 'Наваристый суп с сочными мясными фрикадельками, морковью и картофелем — любимый детский суп.' },
-  { image: 12, category: 'Детское меню', name: 'Котлета с курицей', price: '2850 ₸', description: 'Нежная куриная котлета с пюрешкой — то самое домашнее блюдо, которое дети едят с удовольствием.' },
-  { image: 13, category: 'Детское меню', name: 'Фри', price: '1160 ₸', description: 'Золотистый хрустящий картофель фри — классический детский гарнир к любому блюду.' },
-  { image: 14, category: 'Детское меню', name: 'Картофельные дольки', price: '1380 ₸', description: 'Запечённые дольки картофеля в пряной панировке — более сытная и ароматная альтернатива фри.' },
-  { image: 15, category: 'Детское меню', name: 'Наггетсы', price: '1920 ₸', description: 'Сочные кусочки куриного филе в хрустящей золотистой панировке — дети обожают их с соусом.' },
-  { image: 16, category: 'Детское меню', name: 'Сырные палочки', price: '2250 ₸', description: 'Тянущийся расплавленный сыр внутри хрустящей корочки — хит среди детей и взрослых.' },
-  { image: 17, category: 'Детское меню', name: 'Картофельные шарики', price: '1480 ₸', description: 'Воздушные шарики из картофельного пюре во фритюре — сытно, весело и очень вкусно.' },
-  { image: 18, category: 'Детское меню', name: 'Детский набор с нагетсами', price: '3420 ₸', description: 'Наггетсы, картофель фри и детский сок — полноценный комплект для маленького гостя.' },
-  { image: 19, category: 'Детское меню', name: 'Детский набор с бургером', price: '3820 ₸', description: 'Мини-бургер с сочной котлетой, картофель фри и напиток — всё что нужно для счастливого обеда.' },
-  // ПЕРВЫЕ БЛЮДА
-  { image: 20, category: 'Первые блюда', name: 'Шурпа из баранины', price: '2820 ₸', description: 'Наваристый восточный бульон с крупными кусками сочной баранины, картофелем, луком и ароматными специями.' },
-  { image: 21, category: 'Первые блюда', name: 'Том-ям', price: '3580 ₸', description: 'Тайский суп на кокосовом бульоне с морепродуктами, грибами, лемонграссом и нотками лайма — остро и пикантно.' },
-  { image: 22, category: 'Первые блюда', name: 'Рамен с курицей', price: '2960 ₸', description: 'Японский суп с пшеничной лапшой в насыщенном бульоне, нежным куриным мясом, яйцом и водорослями нори.' },
-  { image: 23, category: 'Первые блюда', name: 'Чечевичный суп', price: '2250 ₸', description: 'Бархатистый суп из красной чечевицы с лимоном и куркумой — питательный, согревающий и полезный.' },
-  // ВТОРЫЕ БЛЮДА
-  { image: 24, category: 'Вторые блюда', name: 'Ташкентский плов', price: '2850 ₸', description: 'Классический узбекский плов из говядины с рассыпчатым рисом девзира, морковью и ароматными специями.' },
-  { image: 25, category: 'Вторые блюда', name: 'Ханский плов', price: '3220 ₸', description: 'Праздничный плов по-королевски: баранина, нут, изюм и перепелиные яйца — богатый вкус для особых случаев.' },
-  { image: 26, category: 'Вторые блюда', name: 'Манты на пару', price: '2850 ₸', description: 'Сочные паровые манты с рубленой бараниной и луком, поданные со сметаной — нежная классика Центральной Азии.' },
-  { image: 27, category: 'Вторые блюда', name: 'Казан кебаб из баранины', price: '4990 ₸', description: 'Аппетитные кусочки баранины, тушённые в казане с картофелем, помидорами и зеленью — щедрое и ароматное блюдо.' },
-  { image: 28, category: 'Вторые блюда', name: 'Жаренные манты', price: '3090 ₸', description: 'Манты, обжаренные до золотистой корочки — снаружи хрустящие, внутри сочные. Подаются с соусом.' },
-  // ПАСТА
-  { image: 29, category: 'Паста', name: 'Альфредо с курицей', price: '3590 ₸', description: 'Паста в нежном сливочном соусе Альфредо с обжаренным куриным филе, пармезаном и ароматным чесноком.' },
-  { image: 30, category: 'Паста', name: 'Альфредо с семгой', price: '3980 ₸', description: 'Шелковистый сливочный соус, бережно обволакивающий пасту, с нежными кусочками норвежской сёмги.' },
-  // СТЕЙКИ
-  { image: 31, category: 'Стейки', name: 'Норвежский лосось', price: '5530 ₸', description: 'Стейк свежего норвежского лосося, запечённый до румяной корочки, с гарниром из риса, овощами и сливочным соусом.' },
-  // УЙГУРСКИЕ БЛЮДА
-  { image: 32, category: 'Уйгурские блюда', name: 'Гуйру лагман', price: '2850 ₸', description: 'Тянутая уйгурская лапша в насыщенном мясном соусе с овощами — главное блюдо уйгурской кухни.' },
-  { image: 33, category: 'Уйгурские блюда', name: 'Гуйру цомян', price: '2980 ₸', description: 'Жареная лапша цомян с мясом и овощами — пряное, ароматное блюдо с дымком от сковороды.' },
-  { image: 34, category: 'Уйгурские блюда', name: 'Ганбян цомян', price: '3050 ₸', description: 'Лапша цомян в сухой обжарке с говядиной, болгарским перцем и соевым соусом — насыщенный вкус без лишней жидкости.' },
-  { image: 35, category: 'Уйгурские блюда', name: 'Фри с курицей', price: '3250 ₸', description: 'Обжаренный картофель фри с сочными кусочками курицы и овощами — уйгурский вариант популярного сочетания.' },
-  { image: 36, category: 'Уйгурские блюда', name: 'Курица на жаровне', price: '3980 ₸', description: 'Нежное куриное мясо, томлённое на раскалённой жаровне с луком и перцем — горячее и ароматное блюдо.' },
-  { image: 37, category: 'Уйгурские блюда', name: 'Говядина на жаровне', price: '4350 ₸', description: 'Отборные кусочки говядины на жаровне с карамелизированным луком и овощами — насыщенный мясной аромат.' },
-  // ШАШЛЫК
-  { image: 38, category: 'Шашлык', name: 'Баранина', price: '2190 ₸', description: 'Сочные кусочки маринованной баранины на мангале — с дымком и хрустящей корочкой, к лавашу и луку.' },
-  { image: 39, category: 'Шашлык', name: 'Говядина', price: '2190 ₸', description: 'Мягкая говядина, маринованная в специях и обжаренная на углях до золотистого цвета.' },
-  { image: 40, category: 'Шашлык', name: 'Люля кебаб', price: '1990 ₸', description: 'Сочный фарш из смеси мяса с луком и зеленью, нанизанный на шампур и обжаренный на мангале.' },
-  { image: 41, category: 'Шашлык', name: 'Куриное филе', price: '1890 ₸', description: 'Нежное куриное филе в пряном маринаде, приготовленное на углях — лёгкий и диетический вариант шашлыка.' },
-  { image: 42, category: 'Шашлык', name: 'Куриные окорочка', price: '1890 ₸', description: 'Сочные куриные окорочка с хрустящей корочкой, обжаренные на живом огне с ароматными специями.' },
-  { image: 43, category: 'Шашлык', name: 'Овощи на гриле', price: '1490 ₸', description: 'Сезонные овощи — баклажан, перец, помидоры — приготовленные на гриле с оливковым маслом и зеленью.' },
-  { image: 44, category: 'Шашлык', name: 'Куриные крылья', price: '1890 ₸', description: 'Крылышки в пряном маринаде, жаренные на мангале до хрустящей золотистой корочки.' },
-  { image: 45, category: 'Шашлык', name: 'Утка', price: '1890 ₸', description: 'Нежная утка на шампуре — деликатесный выбор для тех, кто ценит необычный вкус.' },
-  { image: 46, category: 'Шашлык', name: 'Шампиньоны', price: '1590 ₸', description: 'Крупные шампиньоны, нанизанные на шампур и обжаренные на углях — сочные, ароматные и вегетарианские.' },
-  { image: 47, category: 'Шашлык', name: 'Сет шашлык 1', price: '13490 ₸', description: 'Сборное плато из нескольких видов шашлыка — идеально для компании. Состав уточняйте у официанта.' },
-  { image: 48, category: 'Шашлык', name: 'Сет шашлык 2', price: '16490 ₸', description: 'Расширенное мясное плато с максимальным ассортиментом видов шашлыка — для большой компании.' },
-  { image: 49, category: 'Шашлык', name: 'Табака на мангале', price: '2500 ₸', description: 'Цыплёнок табака, приготовленный на открытом огне — румяный снаружи и невероятно сочный внутри.' },
-  // БЛЮДА ДЛЯ КОМПАНИЙ
-  { image: 50, category: 'Блюда для компаний', name: 'Бешбармак 10 персон', price: '27900 ₸', description: 'Праздничный бешбармак на 10 человек — говядина с тонкими листами теста, картофелем и наваристым бульоном.' },
-  { image: 51, category: 'Блюда для компаний', name: 'Бешбармак 5 персон', price: '19900 ₸', description: 'Сытный бешбармак на 5 человек — традиционное казахское блюдо для тёплых встреч в большой компании.' },
-  { image: 52, category: 'Блюда для компаний', name: 'Ташкентский плов 5 персон', price: '12380 ₸', description: 'Ароматный плов на 5 персон, приготовленный в большом казане по классическому узбекскому рецепту.' },
-  { image: 53, category: 'Блюда для компаний', name: 'Ханский плов 5 персон', price: '14100 ₸', description: 'Праздничный ханский плов с бараниной, нутом и изюмом — торжественное блюдо для особых событий.' },
-  { image: 54, category: 'Блюда для компаний', name: 'Манты на пару 5 персон', price: '12350 ₸', description: 'Большая порция паровых мантов на 5 человек — нежная начинка из баранины и лука, поданная со сметаной.' },
-  { image: 55, category: 'Блюда для компаний', name: 'Жаренные манты 5 персон', price: '13450 ₸', description: 'Хрустящие жареные манты на 5 человек — золотистая корочка снаружи, сочная начинка внутри.' },
-  { image: 56, category: 'Блюда для компаний', name: 'Казан кебаб из баранины 5 персон', price: '19900 ₸', description: 'Щедрый казан кебаб с бараниной и овощами на 5 персон — ароматное горячее блюдо для большого стола.' },
-  // ПИЦЦА
-  { image: 57, category: 'Пицца', name: 'Маргарита', price: '3080 ₸', description: 'Классика итальянской пиццы: томатный соус, моцарелла и свежий базилик на тонком хрустящем тесте.' },
-  { image: 58, category: 'Пицца', name: 'Пепперони', price: '3680 ₸', description: 'Щедрый слой пикантной пепперони на томатном соусе с тянущейся моцареллой — любимица мясоедов.' },
-  { image: 59, category: 'Пицца', name: 'Курица с грибами', price: '3680 ₸', description: 'Нежное куриное филе, шампиньоны и сливочный соус — мягкое и ароматное сочетание.' },
-  { image: 60, category: 'Пицца', name: 'Пицца с курицей', price: '3580 ₸', description: 'Сочная курица с болгарским перцем и помидорами черри на томатном соусе и моцарелле.' },
-  { image: 61, category: 'Пицца', name: '4 сыра', price: '3580 ₸', description: 'Четыре вида сыра на белом соусе — моцарелла, гауда, пармезан и дор-блю для настоящих сырных гурманов.' },
-  { image: 62, category: 'Пицца', name: '4 сезона', price: '3680 ₸', description: 'Пицца, разделённая на четыре сектора с разными начинками — попробуйте сразу все времена года.' },
-  { image: 63, category: 'Пицца', name: 'Хачапури по - аджарски', price: '3680 ₸', description: 'Лодочка из теста с расплавленным сыром и яйцом — грузинская классика, горячая и невероятно сытная.' },
-  { image: 64, category: 'Пицца', name: 'Хачапури по - мегрельски', price: '3480 ₸', description: 'Хачапури с сыром внутри и снаружи — двойная порция тянущегося сулугуни для максимального удовольствия.' },
-  // БУРГЕРЫ
-  { image: 65, category: 'Бургеры', name: 'Гамбургер', price: '2480 ₸', description: 'Сочная говяжья котлета, хрустящий салат, помидор и горчично-майонезный соус в мягкой булочке с фри.' },
-  { image: 66, category: 'Бургеры', name: 'Двойной гамбургер', price: '2890 ₸', description: 'Две котлеты, вдвое больше сытости — для тех, кому одной мало. Подаётся с картофелем фри.' },
-  { image: 67, category: 'Бургеры', name: 'Чизбургер', price: '2720 ₸', description: 'Говяжья котлета с плавленым сыром, хрустящим огурчиком и фирменным соусом — вечный фаворит.' },
-  { image: 68, category: 'Бургеры', name: 'Двойной чизбургер', price: '3100 ₸', description: 'Двойная говяжья котлета с двойным сыром — монументальный бургер для настоящего аппетита.' },
-  { image: 69, category: 'Бургеры', name: 'Чикен бургер', price: '2280 ₸', description: 'Куриная котлета в панировке с хрустящим салатом и нежным соусом — лёгкий и вкусный выбор.' },
-  { image: 70, category: 'Бургеры', name: 'Двойной чикен бургер', price: '2670 ₸', description: 'Две куриные котлеты, больше зелени и соуса — для тех, кто предпочитает курицу в двойном размере.' },
-  { image: 71, category: 'Бургеры', name: 'Чикен чизбургер', price: '2420 ₸', description: 'Куриная котлета с плавленым сыром, свежими овощами и фри — лучшее из двух миров.' },
-  { image: 72, category: 'Бургеры', name: 'Двойной чикен чизбургер', price: '2780 ₸', description: 'Двойная куриная котлета с сыром и фри — максимально сытный вариант куриного бургера.' },
-  { image: 73, category: 'Бургеры', name: 'Клаб сэндвич', price: '2180 ₸', description: 'Многослойный сэндвич с курицей, беконом, яйцом, листовым салатом и помидором на поджаренном тосте.' },
-  // ГАРНИРЫ
-  { image: 74, category: 'Гарниры', name: 'Пюре', price: '920 ₸', description: 'Нежное сливочное картофельное пюре — классический и любимый гарнир ко многим блюдам.' },
-  { image: 75, category: 'Гарниры', name: 'Рис', price: '920 ₸', description: 'Рассыпчатый отварной рис — нейтральный и лёгкий гарнир, идеально сочетающийся с мясом и рыбой.' },
-  { image: 76, category: 'Гарниры', name: 'Фри', price: '1160 ₸', description: 'Хрустящий золотистый картофель фри — беспроигрышный гарнир к бургерам, шашлыку и стейкам.' },
-  { image: 77, category: 'Гарниры', name: 'Картофельные дольки', price: '1380 ₸', description: 'Запечённые картофельные дольки в пряных специях — более сытный и ароматный выбор вместо фри.' },
-  { image: 78, category: 'Гарниры', name: 'Бауырсаки', price: '1200 ₸', description: 'Традиционные казахские пышки, обжаренные во фритюре — пышные, ароматные, с хрустящей корочкой.' },
-  { image: 79, category: 'Гарниры', name: 'Лепешка', price: '250 ₸', description: 'Свежая мягкая узбекская лепёшка из тандыра — к чаю, шашлыку или любому горячему блюду.' },
-  { image: 80, category: 'Гарниры', name: 'Хлебная корзина', price: '1430 ₸', description: 'Корзина свежевыпеченного хлеба — ассорти хлебобулочных изделий к столу для всей компании.' },
-  // БАСКЕТЫ
-  { image: 81, category: 'Баскеты', name: 'Байтсы 17 шт.', price: '2920 ₸', description: '17 хрустящих куриных байтсов — золотистые кусочки куриного мяса в панировке, идеальны для перекуса.' },
-  { image: 82, category: 'Баскеты', name: 'Байтсы 25 шт.', price: '3620 ₸', description: 'Большая порция 25 куриных байтсов — для компании или по-настоящему голодных гостей.' },
-  { image: 83, category: 'Баскеты', name: 'Стрипсы 6 шт.', price: '2250 ₸', description: '6 хрустящих полосок куриного филе в лёгкой панировке — удобный формат для еды руками.' },
-  { image: 84, category: 'Баскеты', name: 'Стрипсы 9 шт.', price: '2850 ₸', description: '9 стрипсов — средняя порция для сытного перекуса или лёгкого обеда с соусом.' },
-  { image: 85, category: 'Баскеты', name: 'Крылышки 5 шт.', price: '2260 ₸', description: '5 хрустящих куриных крылышек в золотистой панировке — подаются с соусом на выбор.' },
-  { image: 86, category: 'Баскеты', name: 'Крылышки 8 шт.', price: '2980 ₸', description: '8 сочных крылышек для большого аппетита — хруст снаружи, нежность внутри.' },
-  { image: 87, category: 'Баскеты', name: 'Баскет Мини 1', price: '4520 ₸', description: '6 шт. крылышки + 6 шт. стрипсы. Мини-набор — попробуйте всё сразу по отличной цене.' },
-  { image: 88, category: 'Баскеты', name: 'Баскет Мини 2', price: '4730 ₸', description: '12 шт. крылышки. Компактный набор для двух человек или одного большого ценителя курицы.' },
-  { image: 89, category: 'Баскеты', name: 'Баскет Средний 1', price: '6450 ₸', description: '10 шт. крылышки + 10 шт. стрипсы. Средний набор для компании из 3–4 человек.' },
-  { image: 90, category: 'Баскеты', name: 'Баскет Средний 2', price: '6450 ₸', description: '20 шт. крылышки. Идеальный вариант для тех, кто не изменяет своей любимой позиции.' },
-  { image: 91, category: 'Баскеты', name: 'Баскет Большой 1', price: '7650 ₸', description: '15 шт. крылышки + 15 шт. стрипсы. Большой микс — хватит на всю компанию с аппетитом.' },
-  { image: 92, category: 'Баскеты', name: 'Баскет Большой 2', price: '7650 ₸', description: '30 шт. крылышки. Грандиозная порция для большой компании или вечеринки.' },
-  // СОУСЫ
-  { image: 93, category: 'Соусы', name: 'Тартар соус', price: '310 ₸', description: 'Сливочный соус с каперсами и зеленью — идеален к рыбе, морепродуктам и жареным блюдам.' },
-  { image: 94, category: 'Соусы', name: 'Кетчуп', price: '310 ₸', description: 'Классический томатный кетчуп — универсальный соус к фри, бургерам и мясу.' },
-  { image: 95, category: 'Соусы', name: 'Сметана', price: '310 ₸', description: 'Нежная свежая сметана — традиционная добавка к мантам, пельменям и горячим блюдам.' },
-  { image: 96, category: 'Соусы', name: 'Сырный соус', price: '310 ₸', description: 'Тягучий сырный соус с насыщенным вкусом — отлично подходит к стрипсам, наггетсам и фри.' },
-  { image: 97, category: 'Соусы', name: 'Барбекю соус', price: '310 ₸', description: 'Сладко-дымный соус барбекю — классическая пара к шашлыку, крылышкам и бургерам.' },
-  { image: 98, category: 'Соусы', name: 'Чесночный соус', price: '310 ₸', description: 'Пикантный сливочно-чесночный соус — яркий акцент к мясным блюдам и хлебу.' },
-  // СУШИ / РОЛЛЫ
-  { image: 99, category: 'Суши/Роллы', name: 'Филадельфия с огурцом', price: '3580 ₸', description: 'Классический ролл с нежным сливочным сыром, свежим огурцом и сёмгой снаружи.' },
-  { image: 100, category: 'Суши/Роллы', name: 'Токио', price: '3460 ₸', description: 'Ролл с угрём, авокадо и сливочным сыром, посыпанный кунжутом — насыщенный японский вкус.' },
-  { image: 101, category: 'Суши/Роллы', name: 'Дуэль', price: '3780 ₸', description: 'Два вида рыбы в одном ролле — сёмга и угорь с авокадо и сливочным сыром в хрустящей панировке.' },
-  { image: 102, category: 'Суши/Роллы', name: 'Калифорния темпура', price: '3190 ₸', description: 'Ролл Калифорния в хрустящем темпурном кляре с крабовым мясом и авокадо.' },
-  { image: 103, category: 'Суши/Роллы', name: 'Каппа-маки', price: '1480 ₸', description: 'Простой и освежающий ролл с хрустящим огурцом — лёгкий выбор для ценителей классики.' },
-  { image: 104, category: 'Суши/Роллы', name: 'Саке-маки', price: '1980 ₸', description: 'Классический ролл с нежной сёмгой и рисом, завёрнутый в листы нори — минималистичная элегантность.' },
-  { image: 105, category: 'Суши/Роллы', name: 'Саке темпура', price: '3580 ₸', description: 'Ролл с сёмгой в темпурной панировке — горячий, хрустящий, с тянущимся сыром внутри.' },
-  { image: 106, category: 'Суши/Роллы', name: 'Унаги темпура', price: '3300 ₸', description: 'Ролл с копчёным угрём в тесте темпура под соусом унаги — богатый и карамельный вкус.' },
-  { image: 107, category: 'Суши/Роллы', name: 'Цезарь темпура', price: '3190 ₸', description: 'Ролл в темпуре с курицей и соусом цезарь — необычное и запоминающееся сочетание вкусов.' },
-  { image: 108, category: 'Суши/Роллы', name: 'Запечённый цезарь', price: '3590 ₸', description: 'Ролл с курицей, запечённый под сырно-майонезной шапочкой — горячий, сытный, с аппетитной корочкой.' },
-  { image: 109, category: 'Суши/Роллы', name: 'Япония темпура', price: '3580 ₸', description: 'Тигровые креветки в темпуре с авокадо и соусом спайси — пряный и хрустящий ролл.' },
-  { image: 110, category: 'Суши/Роллы', name: 'Филадельфия темпура', price: '3680 ₸', description: 'Ролл Филадельфия в темпурном кляре с сёмгой и сливочным сыром — горячее воплощение классики.' },
-  { image: 111, category: 'Суши/Роллы', name: 'Калифорния запечённая', price: '3680 ₸', description: 'Ролл Калифорния с крабовым мясом, запечённый под сырным соусом — тёплый и нежный вариант классики.' },
-  { image: 112, category: 'Суши/Роллы', name: 'Суши сет "Mix"', price: '9990 ₸', description: 'Филадельфия с огурцом, Филадельфия темпура, Саке маки, Каппа маки. Идеальный способ попробовать разные вкусы.' },
-  { image: 113, category: 'Суши/Роллы', name: 'Горячий сет', price: '13990 ₸', description: 'Цезарь темпура, Унаги темпура, Калифорния темпура, Саке темпура. Сет из четырёх горячих темпурных роллов.' },
-  { image: 114, category: 'Суши/Роллы', name: 'Суши сет "ALAQAI"', price: '14990 ₸', description: 'Филадельфия с огурцом, Цезарь темпура, Калифорния маки, Каппа маки, Саке маки, Токио ролл. Фирменный сет ресторана.' },
-  // ЧАЙ
-  { image: 115, category: 'Чай', name: 'Зеленый чай', price: '1090 ₸', description: 'Мягкий листовой зелёный чай — освежающий и лёгкий, с тонким растительным ароматом.' },
-  { image: 116, category: 'Чай', name: 'Чёрный чай', price: '1090 ₸', description: 'Насыщенный чёрный чай в чайнике — классика на все времена, согревающий и бодрящий.' },
-  { image: 117, category: 'Чай', name: 'Чёрный чай с молоком', price: '1430 ₸', description: 'Бархатистый чай со свежим молоком — нежный и сытный, как добрый домашний вечер.' },
-  { image: 118, category: 'Чай', name: 'Ягодный', price: '1820 ₸', description: 'Ароматный чай из смеси ягод — малины, смородины и шиповника — яркий и немного терпкий.' },
-  { image: 119, category: 'Чай', name: 'Марокканский', price: '1820 ₸', description: 'Душистый чай с апельсином, гвоздикой и корицей — восточный аромат в каждом глотке.' },
-  { image: 120, category: 'Чай', name: 'Облепиховый', price: '1820 ₸', description: 'Золотистый чай из облепихи с мёдом и цитрусом — витаминная бомба с кисло-сладким вкусом.' },
-  { image: 121, category: 'Чай', name: 'Малиновый', price: '1820 ₸', description: 'Тёплый малиновый чай с нотками свежих ягод — уютный, слегка терпкий и очень ароматный.' },
-  { image: 122, category: 'Чай', name: 'Ташкентский', price: '1820 ₸', description: 'Традиционный восточный купаж с душистыми травами, цитрусовой цедрой и специями.' },
-  { image: 123, category: 'Чай', name: 'Имбирно-лимонный', price: '1820 ₸', description: 'Согревающий чай с острым имбирём и свежим лимоном — бодрит, тонизирует и защищает от простуд.' },
-  { image: 124, category: 'Чай', name: 'Имбирно-малиновый', price: '1820 ₸', description: 'Сочетание острого имбиря и ягодной малины — пряный и согревающий, с ягодной сладостью.' },
-  { image: 125, category: 'Чай', name: 'Лимон', price: '490 ₸', description: 'Свежий лимон — кислая нотка к вашему чаю для яркости вкуса.' },
-  { image: 126, category: 'Чай', name: 'Молоко', price: '490 ₸', description: 'Свежее молоко — добавьте в чай для мягкости и нежной сливочности.' },
-  // МОЛОЧНЫЙ КОКТЕЙЛЬ
-  { image: 127, category: 'Молочный коктейль', name: 'Клубничный', price: '1850 ₸', description: 'Густой молочный коктейль с ярким вкусом спелой клубники и взбитыми сливками.' },
-  { image: 128, category: 'Молочный коктейль', name: 'Ванильный', price: '1850 ₸', description: 'Нежный коктейль с ароматом натуральной ванили — классика, которая никогда не надоедает.' },
-  { image: 129, category: 'Молочный коктейль', name: 'Шоколадный', price: '1850 ₸', description: 'Насыщенный шоколадный коктейль с какао и взбитыми сливками — мечта сладкоежки.' },
-  { image: 130, category: 'Молочный коктейль', name: 'Банановый', price: '1850 ₸', description: 'Кремовый банановый коктейль с натуральным бананом — сытный и питательный перекус.' },
-  // БАБЛ ТИ
-  { image: 131, category: 'Бабл Ти', name: 'Oreo Medium', price: '2210 ₸', description: 'Кремовый бабл-ти с шариками тапиоки и дроблёным печеньем Орео — сладкий и неотразимый (средний).' },
-  { image: 132, category: 'Бабл Ти', name: 'Oreo Small', price: '1490 ₸', description: 'Тот же любимый вкус Орео с шариками тапиоки — маленький размер для маленькой радости.' },
-  { image: 133, category: 'Бабл Ти', name: 'Шоколадный Medium', price: '2210 ₸', description: 'Насыщенный шоколадный бабл-ти с тапиокой и шоколадными разводами — средний стакан удовольствия.' },
-  { image: 134, category: 'Бабл Ти', name: 'Шоколадный Small', price: '1490 ₸', description: 'Шоколадный бабл-ти маленького размера — сладкий заряд бодрости для тех, кто не хочет много.' },
-  { image: 135, category: 'Бабл Ти', name: 'Клубничный Medium', price: '2210 ₸', description: 'Розовый клубничный бабл-ти с жемчужинами тапиоки — освежающий и яркий (средний).' },
-  { image: 136, category: 'Бабл Ти', name: 'Клубничный Small', price: '1490 ₸', description: 'Маленький стакан клубничного бабл-ти с тапиокой — идеально для детей и тех, кто хочет немного.' },
-  // НАПИТКИ
-  { image: 137, category: 'Напитки', name: 'Bonaqua (0,5 л)', price: '430 ₸', description: 'Чистая негазированная вода Bonaqua — лёгкая и освежающая.' },
-  { image: 138, category: 'Напитки', name: 'Bonaqua (1 л)', price: '600 ₸', description: 'Чистая негазированная вода Bonaqua большого объёма — для тех, кто пьёт много.' },
-  { image: 139, category: 'Напитки', name: 'Bonaqua газированная (0,5 л)', price: '430 ₸', description: 'Газированная вода Bonaqua — пузырьки, которые освежают в любое время дня.' },
-  { image: 140, category: 'Напитки', name: 'Bonaqua газированная (1 л)', price: '600 ₸', description: 'Газированная вода Bonaqua большого объёма — для компании или долгого застолья.' },
-  { image: 141, category: 'Напитки', name: 'PIKO', price: '1650 ₸', description: 'Натуральный фруктовый сок PIKO — апельсин, персик, яблоко или мультифрукт.' },
-  { image: 142, category: 'Напитки', name: 'Coca Cola (0,5 л)', price: '660 ₸', description: 'Легендарная Coca-Cola — освежающая и бодрящая классика на любой вкус.' },
-  { image: 143, category: 'Напитки', name: 'Coca Cola (1 л)', price: '1100 ₸', description: 'Большая Coca-Cola — на всю компанию.' },
-  { image: 144, category: 'Напитки', name: 'Fanta (0,5 л)', price: '660 ₸', description: 'Яркая апельсиновая Fanta — сладкая, пузырчатая и жизнерадостная.' },
-  { image: 145, category: 'Напитки', name: 'Fanta (1 л)', price: '1100 ₸', description: 'Большая Fanta для весёлой компании.' },
-  { image: 146, category: 'Напитки', name: 'Sprite (0,5 л)', price: '660 ₸', description: 'Освежающий Sprite со вкусом лайма и лимона — прозрачный и бодрящий.' },
-  { image: 147, category: 'Напитки', name: 'Sprite (1 л)', price: '1100 ₸', description: 'Большой Sprite — прохлада для всего стола.' },
-  { image: 148, category: 'Напитки', name: 'Fuse Tea (0,5 л)', price: '660 ₸', description: 'Холодный чай Fuse Tea — освежает и утоляет жажду в любое время года.' },
-  { image: 149, category: 'Напитки', name: 'Fuse Tea (1 л)', price: '1100 ₸', description: 'Большой холодный чай Fuse Tea для всей компании.' },
-  { image: 150, category: 'Напитки', name: 'Maxi Чай (0,5 л)', price: '660 ₸', description: 'Холодный бутилированный чай Maxi — лёгкий и приятный вкус на каждый день.' },
-  { image: 151, category: 'Напитки', name: 'Maxi Чай (1 л)', price: '1040 ₸', description: 'Большой Maxi Чай — для тех, кто не может остановиться на маленькой бутылке.' },
-  { image: 152, category: 'Напитки', name: 'GS (0,5 л)', price: '690 ₸', description: 'Газированный напиток GS — яркий фруктовый вкус в стильной банке.' },
-  { image: 153, category: 'Напитки', name: 'GS (1,3 л)', price: '1100 ₸', description: 'Большой газированный напиток GS — много вкуса для большой компании.' },
-  { image: 154, category: 'Напитки', name: 'Лимонад Дюшес', price: '1050 ₸', description: 'Классический советский лимонад с нежным грушевым вкусом — ностальгия в каждом глотке.' },
-  { image: 155, category: 'Напитки', name: 'Компот (0,5 л)', price: '650 ₸', description: 'Домашний компот из сухофруктов — натуральный, сладкий и очень уютный напиток.' },
-  { image: 156, category: 'Напитки', name: 'Компот (1 л)', price: '1100 ₸', description: 'Большой компот — тёплый вкус домашней кухни для всего стола.' },
-  { image: 157, category: 'Напитки', name: 'Детский сок', price: '450 ₸', description: 'Фруктовый сок Piko в мини-упаковке специально для детей — натуральный и безопасный.' },
-  // ШОКОЛАД
-  { image: 158, category: 'Шоколад', name: 'Казахстан (маленький)', price: '300 ₸', description: 'Казахстанский молочный шоколад — нежный и приятный, с гордым патриотическим дизайном.' },
-  { image: 159, category: 'Шоколад', name: 'Казахстан (большой)', price: '1000 ₸', description: 'Большая плитка казахстанского молочного шоколада — щедрый подарок себе и близким.' },
-  { image: 160, category: 'Шоколад', name: 'Alpen Gold', price: '1200 ₸', description: 'Молочный шоколад Alpen Gold с фундуком — хрустящий, сладкий и невозможно остановиться.' },
-  // ЛИМОНАДЫ
-  { image: 161, category: 'Лимонады', name: 'Манго-маракуйя (0,5 л)', price: '950 ₸', description: 'Экзотический лимонад из сочного манго и маракуйи — тропическое настроение в каждом стакане.' },
-  { image: 162, category: 'Лимонады', name: 'Манго-маракуйя (1 л)', price: '2400 ₸', description: 'Большой кувшин экзотического лимонада манго-маракуйя для компании.' },
-  { image: 163, category: 'Лимонады', name: 'Арбуз-дыня (0,5 л)', price: '950 ₸', description: 'Летний лимонад из сочного арбуза и ароматной дыни — сладкий, освежающий, как жаркий июль.' },
-  { image: 164, category: 'Лимонады', name: 'Арбуз-дыня (1 л)', price: '2400 ₸', description: 'Большой кувшин летнего лимонада арбуз-дыня для всей компании.' },
-  { image: 165, category: 'Лимонады', name: 'Киви-яблоко (0,5 л)', price: '950 ₸', description: 'Освежающий зелёный лимонад из киви и яблока — с кислинкой и лёгкой мятной свежестью.' },
-  { image: 166, category: 'Лимонады', name: 'Киви-яблоко (1 л)', price: '2400 ₸', description: 'Большой кувшин зелёного лимонада киви-яблоко.' },
-  { image: 167, category: 'Лимонады', name: 'Цитрусовый (0,5 л)', price: '950 ₸', description: 'Солнечный лимонад из апельсина, лимона и лайма — яркий, бодрящий и очень освежающий.' },
-  { image: 168, category: 'Лимонады', name: 'Цитрусовый (1 л)', price: '2400 ₸', description: 'Большой кувшин цитрусового лимонада — заряд витаминов для всей компании.' },
-  { image: 169, category: 'Лимонады', name: 'Мохито (0,5 л)', price: '950 ₸', description: 'Безалкогольный мохито с мятой, лаймом и содовой — прохладный и ароматный коктейль.' },
-  { image: 170, category: 'Лимонады', name: 'Мохито (1 л)', price: '2400 ₸', description: 'Большой кувшин освежающего мохито — мята и лайм для всей компании.' },
-  { image: 171, category: 'Лимонады', name: 'Клубничный (0,5 л)', price: '950 ₸', description: 'Насыщенный клубничный лимонад с яркими ягодными нотками — розовый, сладкий и соблазнительный.' },
-  { image: 172, category: 'Лимонады', name: 'Клубничный (1 л)', price: '2400 ₸', description: 'Большой кувшин клубничного лимонада — яркая розовая радость для компании.' },
-  { image: 173, category: 'Лимонады', name: 'Ягодный микс (0,5 л)', price: '950 ₸', description: 'Лимонад из смеси лесных ягод — смородина, клюква, малина — насыщенный и терпкий.' },
-  { image: 174, category: 'Лимонады', name: 'Ягодный микс (1 л)', price: '2400 ₸', description: 'Большой кувшин ягодного миксового лимонада для настоящих ценителей.' },
-  { image: 175, category: 'Лимонады', name: 'Манго-малина (0,5 л)', price: '950 ₸', description: 'Яркое сочетание тропического манго и ароматной малины — сладко-кислый баланс в стакане.' },
-  { image: 176, category: 'Лимонады', name: 'Манго-малина (1 л)', price: '2400 ₸', description: 'Большой кувшин лимонада манго-малина для компании.' },
-  { image: 177, category: 'Лимонады', name: 'Киви-лайм (0,5 л)', price: '950 ₸', description: 'Зелёный освежающий лимонад с кислинкой киви и лайма — бодрит лучше кофе.' },
-  { image: 178, category: 'Лимонады', name: 'Киви-лайм (1 л)', price: '2400 ₸', description: 'Большой кувшин лимонада киви-лайм — яркий и освежающий.' },
-  { image: 179, category: 'Лимонады', name: 'Маракуйя-клубника (0,5 л)', price: '950 ₸', description: 'Экзотическая маракуйя встречается с нежной клубникой — страстный, яркий и незабываемый вкус.' },
-  { image: 180, category: 'Лимонады', name: 'Маракуйя-клубника (1 л)', price: '2400 ₸', description: 'Большой кувшин лимонада маракуйя-клубника для компании.' },
-  // ДЕСЕРТЫ
-  { image: 181, category: 'Десерты', name: 'Красный бархат', price: '1600 ₸', description: 'Роскошный торт с ярко-красными бисквитными коржами и нежным кремом из сливочного сыра.' },
-  { image: 182, category: 'Десерты', name: 'Молочная девочка', price: '1600 ₸', description: 'Воздушный торт из тонких бисквитных коржей со взбитыми сливками — мягкий, нежный и тающий.' },
-  { image: 183, category: 'Десерты', name: 'Вупи пай', price: '1600 ₸', description: 'Два шоколадных пряника с кремом посередине — американская классика, сочная и шоколадно-насыщенная.' },
-  { image: 184, category: 'Десерты', name: 'Сникерс', price: '1600 ₸', description: 'Торт в стиле знаменитого батончика: шоколадный бисквит, карамель, арахис и шоколадный ганаш.' },
-  { image: 185, category: 'Десерты', name: 'Медовик', price: '1600 ₸', description: 'Классический медовый торт с тончайшими коржами и нежным сметанным кремом — вкус домашнего уюта.' },
-];
- 
-    // ── УТИЛИТЫ ──
-    function slug(text) {
-      return text.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '-').replace(/(^-|-$)/g, '');
-    }
- 
-    // ── ЭЛЕМЕНТЫ ──
-    const menuSections  = document.getElementById('menuSections');
-    const sidebarNav    = document.getElementById('sidebarNav');
-    const categoryBar   = document.getElementById('categoryBar');
-    const mobileCatScroll = document.getElementById('mobileCatScroll');
-    const searchInput   = document.getElementById('searchInput');
-    const emptyState    = document.getElementById('emptyState');
-    const showAllBtn    = document.getElementById('showAllBtn');
-    const scrollTopBtn  = document.getElementById('scrollTopBtn');
- 
-    // ── ПЛАВНЫЙ СКРОЛЛ С УЧЁТОМ ШАПКИ ──
-    let isScrolling = false; // флаг — блокирует observer во время программного скролла
- 
-    function scrollToSection(id) {
-      const target = document.getElementById(id);
-      if (!target) return;
- 
-      const topbar = document.querySelector('.topbar');
-      const offset = (topbar ? topbar.offsetHeight : 70) + 16;
-      const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
- 
-      // Блокируем observer на время анимации (≈ 700мс)
-      isScrolling = true;
-      clearTimeout(window._scrollLockTimer);
-      window._scrollLockTimer = setTimeout(() => { isScrolling = false; }, 700);
- 
-      window.scrollTo({ top, behavior: 'smooth' });
-    }
- 
-    // Подсветить чип в горизонтальном баре без вызова scrollIntoView на странице
-    function highlightChips(id) {
-      // Top bar
-      Array.from(categoryBar.querySelectorAll('.chip')).forEach(c => {
-        const active = c.getAttribute('href') === id;
-        c.classList.toggle('active-chip', active);
-        if (active) {
-          // Скролл только внутри самой полосы чипов, не страницы
-          categoryBar.scrollTo({
-            left: c.offsetLeft - categoryBar.offsetWidth / 2 + c.offsetWidth / 2,
-            behavior: 'smooth'
-          });
-        }
-      });
- 
-      // Mobile bar
-      Array.from(mobileCatScroll.querySelectorAll('.chip')).forEach(c => {
-        const active = c.getAttribute('href') === id;
-        c.classList.toggle('active-chip', active);
-        if (active) {
-          mobileCatScroll.scrollTo({
-            left: c.offsetLeft - mobileCatScroll.offsetWidth / 2 + c.offsetWidth / 2,
-            behavior: 'smooth'
-          });
-        }
-      });
- 
-      // Sidebar
-      Array.from(document.querySelectorAll('.sidebar a')).forEach(l =>
-        l.classList.toggle('active', l.getAttribute('href') === id)
-      );
-    }
- 
-    // ── НАВИГАЦИЯ ──
-    function buildNav() {
-      [sidebarNav, categoryBar, mobileCatScroll].forEach(el => el && (el.innerHTML = ''));
- 
-      categories.forEach(cat => {
-        const id = slug(cat);
-        const href = `#${id}`;
- 
-        // Sidebar
-        const sideLink = document.createElement('a');
-        sideLink.href = href;
-        sideLink.textContent = cat;
-        sideLink.addEventListener('click', e => {
-          e.preventDefault();
-          highlightChips(href);
-          scrollToSection(id);
-        });
-        sidebarNav.appendChild(sideLink);
- 
-        // Top chip bar
-        const chip = document.createElement('a');
-        chip.href = href;
-        chip.className = 'chip';
-        chip.textContent = cat;
-        chip.addEventListener('click', e => {
-          e.preventDefault();
-          highlightChips(href);
-          scrollToSection(id);
-        });
-        categoryBar.appendChild(chip);
- 
-        // Mobile bottom chip bar
-        const mChip = document.createElement('a');
-        mChip.href = href;
-        mChip.className = 'chip';
-        mChip.textContent = cat;
-        mChip.addEventListener('click', e => {
-          e.preventDefault();
-          highlightChips(href);
-          scrollToSection(id);
-        });
-        mobileCatScroll.appendChild(mChip);
-      });
-    }
- 
-    // ── SIDEBAR ACTIVE LINK (при ручном скролле) ──
-    function bindSidebarObserver() {
-      const sections = Array.from(document.querySelectorAll('.section'));
-      if (!sections.length) return;
- 
-      const observer = new IntersectionObserver(entries => {
-        // Не трогаем чипы пока идёт программный скролл
-        if (isScrolling) return;
- 
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            highlightChips(`#${entry.target.id}`);
-          }
-        });
-      }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
- 
-      sections.forEach(s => observer.observe(s));
-    }
-    function createCard(item) {
-      return `
-        <article class="card">
-          <div class="image-wrap">
-            <img
-              src="images/${item.image}.jpg"
-              alt="${item.name}"
-              loading="lazy"
-              decoding="async"
-              onerror="this.onerror=null;this.src='images/${item.image}.png'"
-            />
-            <div class="badge">#${item.image}</div>
-          </div>
-          <div class="card-body">
-            <div class="price">${item.price}</div>
-            <h3 class="name">${item.name}</h3>
-            <p class="desc">${item.description}</p>
-          </div>
-        </article>
-      `;
-    }
- 
-    // ── РЕНДЕР ──
-    function renderMenu(items) {
-      if (items === undefined) items = menuItems;
-      menuSections.innerHTML = '';
- 
-      categories.forEach(cat => {
-        const filtered = items.filter(item => item.category === cat);
-        if (!filtered.length) return;
- 
-        const section = document.createElement('section');
-        section.className = 'section';
-        section.id = slug(cat);
-        section.innerHTML = `
-          <h2 class="section-title">${cat}</h2>
-          <div class="grid">${filtered.map(createCard).join('')}</div>
-        `;
-        menuSections.appendChild(section);
-      });
- 
-      emptyState.style.display = items.length ? 'none' : 'block';
-      bindSidebarObserver();
-    }
- 
-    // ── ПОИСК ──
-    let searchTimer;
-    function filterMenu() {
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        const q = searchInput.value.trim().toLowerCase();
-        if (!q) { renderMenu(menuItems); return; }
-        const filtered = menuItems.filter(item =>
-          `${item.name} ${item.category} ${item.description}`.toLowerCase().includes(q)
-        );
-        renderMenu(filtered);
-      }, 200);
-    }
- 
-    // ── КНОПКА НАВЕРХ ──
-    scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
- 
-    // ── ПОКАЗАТЬ ВСЁ ──
-    showAllBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      renderMenu(menuItems);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
- 
-    // ── СОБЫТИЯ ──
-    searchInput.addEventListener('input', filterMenu);
- 
-    // Предотвращаем zoom при фокусе на input (iOS) — шрифт уже 16px
-    searchInput.addEventListener('focus', () => {
-      document.querySelector('meta[name=viewport]').setAttribute(
-        'content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover'
-      );
-    });
-    searchInput.addEventListener('blur', () => {
-      document.querySelector('meta[name=viewport]').setAttribute(
-        'content', 'width=device-width, initial-scale=1.0, viewport-fit=cover'
-      );
-    });
- 
-    // ── ИНИЦИАЛИЗАЦИЯ ──
+    <div class="category-bar-wrap">
+      <nav class="category-bar" id="categoryBar"></nav>
+    </div>
+  </div>
+</section>
+
+<!-- Фильтр по цене -->
+<div class="price-filter-bar">
+  <div class="price-filter-inner">
+    <span class="pf-label" id="pfLabel">Цена:</span>
+    <button class="pf-btn active" data-max="Infinity" onclick="setPriceFilter(this)">Всё</button>
+    <button class="pf-btn" data-max="1000" onclick="setPriceFilter(this)">до 1 000 ₸</button>
+    <button class="pf-btn" data-max="2000" onclick="setPriceFilter(this)">до 2 000 ₸</button>
+    <button class="pf-btn" data-max="3000" onclick="setPriceFilter(this)">до 3 000 ₸</button>
+    <button class="pf-btn" data-max="5000" onclick="setPriceFilter(this)">до 5 000 ₸</button>
+  </div>
+</div>
+
+<main class="layout">
+  <aside class="sidebar">
+    <h3 id="sidebarTitle">Категории</h3>
+    <nav id="sidebarNav"></nav>
+  </aside>
+  <section class="content">
+    <div id="menuSections"></div>
+    <div class="empty" id="emptyState">Ничего не найдено по вашему запросу.</div>
+  </section>
+</main>
+
+<nav class="mobile-cat-bar" id="mobileCatBar">
+  <div class="mobile-cat-scroll" id="mobileCatScroll"></div>
+</nav>
+
+<div class="floating">
+  <button class="btn" id="callBtn" aria-label="Позвать официанта" title="Позвать официанта">🔔</button>
+  <button class="btn" id="scrollTopBtn" aria-label="Наверх" title="Наверх">↑</button>
+</div>
+
+<!-- Тост-уведомление -->
+<div class="toast" id="toast"></div>
+
+<!-- PWA install prompt -->
+<div class="install-prompt" id="installPrompt">
+  <p id="installText">Добавить меню на главный экран?</p>
+  <button class="install-btn" id="installBtn">Установить</button>
+  <button class="install-dismiss" id="installDismiss" aria-label="Закрыть">×</button>
+</div>
+
+<!-- Модальное окно блюда -->
+<dialog id="itemModal" aria-modal="true">
+  <div class="modal-wrap" id="modalWrap"></div>
+</dialog>
+
+<footer class="footer">
+  <div class="footer-box" id="footerBox">
+    <strong>ALAQAI</strong> — детский развлекательный центр<br>
+    Тауелсиздик 32 · +7 700 497 9000
+  </div>
+</footer>
+
+<script>
+// ── XSS-ЗАЩИТА ─────────────────────────────────────────────────────────────
+function esc(s){
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+// ── СОСТОЯНИЕ ───────────────────────────────────────────────────────────────
+let menuData      = null;   // данные из menu.json
+let lang          = localStorage.getItem('alaqai_lang') || 'ru';
+let activePriceMax = Infinity;
+let searchQuery   = '';
+let isScrolling   = false;
+
+// ── QR / НОМЕР СТОЛА ────────────────────────────────────────────────────────
+const urlParams = new URLSearchParams(location.search);
+const tableNum  = urlParams.get('table');
+if (tableNum) {
+  const tb = document.getElementById('tableBadge');
+  tb.textContent = '🪑 Стол ' + esc(tableNum);
+  tb.classList.add('visible');
+  document.title = 'ALAQAI — Стол ' + tableNum;
+}
+
+// ── ПЕРЕВОДЫ UI ─────────────────────────────────────────────────────────────
+const UI = {
+  ru: {
+    search:    'Поиск блюда...',
+    showAll:   'Всё',
+    cats:      'Категории',
+    empty:     'Ничего не найдено по вашему запросу.',
+    heroTitle: 'Электронное меню',
+    heroSub:   'ALAQAI — Балалардың ойын-сауық орталығы',
+    schedule:  'Күн сайын 11:00–22:30 · Ежедневно без выходных',
+    pfLabel:   'Цена:',
+    pfAll:     'Всё',
+    pf1k:      'до 1 000 ₸',
+    pf2k:      'до 2 000 ₸',
+    pf3k:      'до 3 000 ₸',
+    pf5k:      'до 5 000 ₸',
+    install:   'Добавить меню на главный экран?',
+    footer:    '<strong>ALAQAI</strong> — детский развлекательный центр<br>Тауелсиздик 32 · +7 700 497 9000',
+    table:     'Стол',
+  },
+  kz: {
+    search:    'Тағам іздеу...',
+    showAll:   'Барлығы',
+    cats:      'Санаттар',
+    empty:     'Сіздің сұранысыңыз бойынша ештеңе табылмады.',
+    heroTitle: 'Электронды мәзір',
+    heroSub:   'ALAQAI — Балалардың ойын-сауық орталығы',
+    schedule:  'Күн сайын 11:00–22:30 · Демалыссыз',
+    pfLabel:   'Баға:',
+    pfAll:     'Барлығы',
+    pf1k:      '1 000 ₸ дейін',
+    pf2k:      '2 000 ₸ дейін',
+    pf3k:      '3 000 ₸ дейін',
+    pf5k:      '5 000 ₸ дейін',
+    install:   'Мәзірді негізгі экранға қосу?',
+    footer:    '<strong>ALAQAI</strong> — балалар ойын-сауық орталығы<br>Тәуелсіздік 32 · +7 700 497 9000',
+    table:     'Үстел',
+  }
+};
+
+function applyUILang() {
+  const t = UI[lang];
+  document.getElementById('searchInput').placeholder = t.search;
+  document.getElementById('showAllBtn').textContent   = t.showAll;
+  document.getElementById('sidebarTitle').textContent = t.cats;
+  document.getElementById('emptyState').textContent   = t.empty;
+  document.getElementById('heroTitle').textContent    = t.heroTitle;
+  document.getElementById('heroSubtitle').textContent = t.heroSub;
+  document.getElementById('heroSchedule').textContent = t.schedule;
+  document.getElementById('pfLabel').textContent      = t.pfLabel;
+  document.getElementById('footerBox').innerHTML      = t.footer;
+  document.getElementById('installText').textContent  = t.install;
+  document.querySelectorAll('.pf-btn').forEach(btn => {
+    const max = btn.dataset.max;
+    if (max === 'Infinity') btn.textContent = t.pfAll;
+    else if (max === '1000') btn.textContent = t.pf1k;
+    else if (max === '2000') btn.textContent = t.pf2k;
+    else if (max === '3000') btn.textContent = t.pf3k;
+    else if (max === '5000') btn.textContent = t.pf5k;
+  });
+  if (tableNum) {
+    document.getElementById('tableBadge').textContent = '🪑 ' + t.table + ' ' + esc(tableNum);
+  }
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang)
+  );
+  document.documentElement.lang = lang;
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('alaqai_lang', l);
+  applyUILang();
+  if (menuData) {
     buildNav();
-    renderMenu();
-  </script>
+    renderFiltered();
+  }
+}
+
+// ── ВСПОМОГАТЕЛЬНЫЕ ────────────────────────────────────────────────────────
+function slug(text) {
+  return text.toLowerCase()
+    .replace(/[аәбвгғдеёжзийкқлмнңоөпрстуүфхhцчшщъыіьэюя]/g, c => ({
+      'а':'a','ә':'a','б':'b','в':'v','г':'g','ғ':'g','д':'d','е':'e','ё':'e',
+      'ж':'zh','з':'z','и':'i','й':'y','к':'k','қ':'k','л':'l','м':'m','н':'n',
+      'ң':'n','о':'o','ө':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ү':'u',
+      'ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sh','ъ':'','ы':'y','і':'i',
+      'ь':'','э':'e','ю':'yu','я':'ya'
+    }[c] || c))
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function catName(idx) {
+  return menuData.categories[lang][idx];
+}
+
+function itemName(item) { return item[lang].name; }
+function itemDesc(item) { return item[lang].desc; }
+
+// ── АНАЛИТИКА ───────────────────────────────────────────────────────────────
+function trackView(item) {
+  try {
+    const event = {
+      image:    item.image,
+      name:     item[lang].name,
+      category: catName(item.category),
+      price:    item.price,
+      lang,
+      table:    tableNum || null,
+      ts:       Date.now()
+    };
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/track', JSON.stringify(event));
+    }
+    // Сохраняем локально для отладки
+    const log = JSON.parse(localStorage.getItem('alaqai_views') || '[]');
+    log.push(event);
+    if (log.length > 200) log.splice(0, log.length - 200);
+    localStorage.setItem('alaqai_views', JSON.stringify(log));
+  } catch (e) { /* тихо игнорируем */ }
+}
+
+function getViewCount(imageId) {
+  try {
+    const log = JSON.parse(localStorage.getItem('alaqai_views') || '[]');
+    const today = new Date().toDateString();
+    return log.filter(e => e.image === imageId && new Date(e.ts).toDateString() === today).length;
+  } catch(e) { return 0; }
+}
+
+// ── ТОСТ ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── МОДАЛЬНОЕ ОКНО ───────────────────────────────────────────────────────────
+const modal    = document.getElementById('itemModal');
+const modalWrap= document.getElementById('modalWrap');
+
+function openModal(item) {
+  trackView(item);
+  const views = getViewCount(item.image);
+  const viewsHtml = views > 1
+    ? `<div class="modal-views">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Смотрели сегодня: ${views} раз
+       </div>`
+    : '';
+  modalWrap.innerHTML = `
+    <picture>
+      <source srcset="images/${item.image}.webp" type="image/webp">
+      <img class="modal-img" src="images/${item.image}.png"
+           alt="${esc(itemName(item))}"
+           onerror="this.onerror=null;this.src='images/${item.image}.jpg'" />
+    </picture>
+    <div class="modal-body">
+      <div class="modal-badge">${esc(catName(item.category))}</div>
+      <h3 class="modal-name">${esc(itemName(item))}</h3>
+      <p class="modal-desc">${esc(itemDesc(item))}</p>
+      <div class="modal-price">${esc(String(item.price))} ₸</div>
+      ${viewsHtml}
+    </div>
+    <button class="modal-close" onclick="document.getElementById('itemModal').close()" aria-label="Закрыть">×</button>
+  `;
+  modal.showModal();
+}
+
+modal.addEventListener('click', e => {
+  if (e.target === modal) modal.close();
+});
+
+// ── КАРТОЧКА ─────────────────────────────────────────────────────────────────
+function createCard(item) {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.innerHTML = `
+    <div class="image-wrap">
+      <picture>
+        <source srcset="images/${item.image}.webp" type="image/webp">
+        <img src="images/${item.image}.png" alt="${esc(itemName(item))}"
+             loading="lazy" decoding="async" width="400" height="400"
+             onerror="this.onerror=null;this.src='images/${item.image}.jpg'" />
+      </picture>
+      <div class="badge">#${item.image}</div>
+    </div>
+    <div class="card-body">
+      <div class="price">${esc(String(item.price))} ₸</div>
+      <h3 class="name">${esc(itemName(item))}</h3>
+      <p class="desc">${esc(itemDesc(item))}</p>
+    </div>
+  `;
+  card.addEventListener('click', () => openModal(item));
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(item); });
+  return card;
+}
+
+function skeletonCard() {
+  return `<div class="skel-card">
+    <div class="skel-img skeleton"></div>
+    <div class="skel-body">
+      <div class="skel-line short skeleton"></div>
+      <div class="skel-line med skeleton"></div>
+      <div class="skel-line long skeleton"></div>
+    </div>
+  </div>`;
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+const sidebarNav     = document.getElementById('sidebarNav');
+const categoryBar    = document.getElementById('categoryBar');
+const mobileCatScroll= document.getElementById('mobileCatScroll');
+
+function buildNav() {
+  [sidebarNav, categoryBar, mobileCatScroll].forEach(el => el && (el.innerHTML = ''));
+  menuData.categories[lang].forEach((cat, idx) => {
+    const id   = slug(cat) || ('cat-' + idx);
+    const href = '#' + id;
+    const mkLink = (cls) => {
+      const a = document.createElement('a');
+      a.href = href;
+      if (cls) a.className = cls;
+      a.textContent = cat;
+      a.addEventListener('click', e => { e.preventDefault(); highlightChips(href); scrollToSection(id); });
+      return a;
+    };
+    sidebarNav.appendChild(mkLink(''));
+    categoryBar.appendChild(mkLink('chip'));
+    mobileCatScroll.appendChild(mkLink('chip'));
+  });
+}
+
+function scrollToSection(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const topbar = document.querySelector('.topbar');
+  const pfBar  = document.querySelector('.price-filter-bar');
+  const offset = (topbar ? topbar.offsetHeight : 70) + (pfBar ? pfBar.offsetHeight : 40) + 16;
+  const top    = target.getBoundingClientRect().top + window.pageYOffset - offset;
+  isScrolling  = true;
+  clearTimeout(window._scrollLockTimer);
+  window._scrollLockTimer = setTimeout(() => { isScrolling = false; }, 700);
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+function highlightChips(id) {
+  [categoryBar, mobileCatScroll].forEach(bar => {
+    if (!bar) return;
+    bar.querySelectorAll('.chip').forEach(c => {
+      const active = c.getAttribute('href') === id;
+      c.classList.toggle('active-chip', active);
+      if (active) bar.scrollTo({ left: c.offsetLeft - bar.offsetWidth / 2 + c.offsetWidth / 2, behavior: 'smooth' });
+    });
+  });
+  sidebarNav.querySelectorAll('a').forEach(l =>
+    l.classList.toggle('active', l.getAttribute('href') === id)
+  );
+}
+
+function bindSidebarObserver() {
+  const sections = Array.from(document.querySelectorAll('.section'));
+  if (!sections.length) return;
+  if (window._sectionObserver) window._sectionObserver.disconnect();
+  window._sectionObserver = new IntersectionObserver(entries => {
+    if (isScrolling) return;
+    entries.forEach(entry => { if (entry.isIntersecting) highlightChips('#' + entry.target.id); });
+  }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+  sections.forEach(s => window._sectionObserver.observe(s));
+}
+
+// ── ВИРТУАЛИЗАЦИЯ (порционный рендер) ─────────────────────────────────────
+const BATCH = 24; // карточек за раз
+let renderQueue = []; // [{cat, items}, ...]
+let renderPos   = 0;
+let sentinel    = null;
+let batchObserver = null;
+
+function setupBatchObserver(container) {
+  if (batchObserver) batchObserver.disconnect();
+  if (!sentinel) {
+    sentinel = document.createElement('div');
+    sentinel.style.cssText = 'height:1px;width:100%;';
+  }
+  container.appendChild(sentinel);
+  batchObserver = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) renderNextBatch();
+  }, { rootMargin: '200px' });
+  batchObserver.observe(sentinel);
+}
+
+function renderNextBatch() {
+  if (!renderQueue.length) return;
+  let rendered = 0;
+  const menuSections = document.getElementById('menuSections');
+
+  while (rendered < BATCH && renderQueue.length > 0) {
+    const block = renderQueue[0];
+    let section = document.getElementById(block.id);
+    if (!section) {
+      section = document.createElement('section');
+      section.className = 'section';
+      section.id = block.id;
+      const h2 = document.createElement('h2');
+      h2.className = 'section-title';
+      h2.textContent = block.cat;
+      section.appendChild(h2);
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      grid.id = 'grid-' + block.id;
+      section.appendChild(grid);
+      menuSections.insertBefore(section, sentinel);
+    }
+    const grid = document.getElementById('grid-' + block.id);
+    const toRender = Math.min(BATCH - rendered, block.items.length - block.pos);
+    for (let i = block.pos; i < block.pos + toRender; i++) {
+      grid.appendChild(createCard(block.items[i]));
+    }
+    block.pos += toRender;
+    rendered  += toRender;
+    if (block.pos >= block.items.length) renderQueue.shift();
+  }
+
+  if (sentinel && sentinel.parentNode) {
+    sentinel.parentNode.appendChild(sentinel); // переносим в конец
+  }
+  bindSidebarObserver();
+}
+
+// ── РЕНДЕР С ФИЛЬТРАМИ ──────────────────────────────────────────────────────
+const menuSectionsEl = document.getElementById('menuSections');
+const emptyState     = document.getElementById('emptyState');
+
+function renderFiltered() {
+  const q = searchQuery.toLowerCase();
+  menuSectionsEl.innerHTML = '';
+  if (sentinel) { try { sentinel.remove(); } catch(e){} }
+  renderQueue = [];
+
+  let totalVisible = 0;
+
+  menuData.categories[lang].forEach((cat, idx) => {
+    const filtered = menuData.items.filter(item => {
+      if (item.category !== idx) return false;
+      if (item.price > activePriceMax) return false;
+      if (!q) return true;
+      const name = item[lang].name.toLowerCase();
+      const desc = item[lang].desc.toLowerCase();
+      return name.includes(q) || desc.includes(q) || cat.toLowerCase().includes(q);
+    });
+    if (!filtered.length) return;
+    totalVisible += filtered.length;
+    const id = slug(cat) || ('cat-' + idx);
+    renderQueue.push({ id, cat, items: filtered, pos: 0 });
+  });
+
+  emptyState.style.display = totalVisible === 0 ? 'block' : 'none';
+  if (totalVisible === 0) return;
+
+  setupBatchObserver(menuSectionsEl);
+  renderNextBatch(); // первая пачка сразу
+}
+
+// ── ФИЛЬТР ЦЕНЫ ─────────────────────────────────────────────────────────────
+function setPriceFilter(btn) {
+  document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activePriceMax = btn.dataset.max === 'Infinity' ? Infinity : parseInt(btn.dataset.max);
+  renderFiltered();
+}
+
+// ── ПОИСК с улучшенным debounce ─────────────────────────────────────────────
+let searchTimer;
+function filterMenu() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const cb = () => {
+      searchQuery = document.getElementById('searchInput').value.trim();
+      renderFiltered();
+    };
+    if (typeof requestIdleCallback !== 'undefined') requestIdleCallback(cb, { timeout: 500 });
+    else cb();
+  }, 350);
+}
+
+// ── PWA УСТАНОВКА ────────────────────────────────────────────────────────────
+let deferredInstallPrompt = null;
+const installPromptEl  = document.getElementById('installPrompt');
+const installBtn       = document.getElementById('installBtn');
+const installDismiss   = document.getElementById('installDismiss');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const dismissed = localStorage.getItem('alaqai_install_dismissed');
+  if (!dismissed) installPromptEl.classList.add('visible');
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') installPromptEl.classList.remove('visible');
+  deferredInstallPrompt = null;
+});
+
+installDismiss.addEventListener('click', () => {
+  installPromptEl.classList.remove('visible');
+  localStorage.setItem('alaqai_install_dismissed', '1');
+});
+
+// ── OFFLINE ───────────────────────────────────────────────────────────────────
+function updateOnlineStatus() {
+  document.getElementById('offlineBanner').style.display = navigator.onLine ? 'none' : 'block';
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ── SERVICE WORKER ────────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ── ПРОЧИЕ СОБЫТИЯ ───────────────────────────────────────────────────────────
+document.getElementById('scrollTopBtn').addEventListener('click', () =>
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+);
+
+// ── КНОПКА «ПОЗВАТЬ ОФИЦИАНТА» ───────────────────────────────────────────────
+document.getElementById('callBtn').addEventListener('click', () => {
+  navigator.vibrate?.(300);
+  const msg = tableNum
+    ? `🔔 Официант вызван к столу ${tableNum}`
+    : '🔔 Официант вызван!';
+  showToast(msg);
+  if (tableNum && navigator.sendBeacon) {
+    navigator.sendBeacon('/api/call', JSON.stringify({ table: tableNum, ts: Date.now() }));
+  }
+});
+
+document.getElementById('showAllBtn').addEventListener('click', () => {
+  document.getElementById('searchInput').value = '';
+  searchQuery = '';
+  activePriceMax = Infinity;
+  document.querySelectorAll('.pf-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.max === 'Infinity')
+  );
+  renderFiltered();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.getElementById('searchInput').addEventListener('input', filterMenu);
+
+const vp = document.querySelector('meta[name=viewport]');
+document.getElementById('searchInput').addEventListener('focus', () =>
+  vp && vp.setAttribute('content','width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover')
+);
+document.getElementById('searchInput').addEventListener('blur', () =>
+  vp && vp.setAttribute('content','width=device-width, initial-scale=1.0, viewport-fit=cover')
+);
+
+// ── ЗАГРУЗКА ДАННЫХ И ИНИЦИАЛИЗАЦИЯ ─────────────────────────────────────────
+async function init() {
+  // Показываем скелетоны пока грузятся данные
+  const skels = document.getElementById('menuSections');
+  skels.innerHTML = Array(6).fill(0).map(() =>
+    `<div class="grid" style="margin-bottom:28px">${Array(3).fill(skeletonCard()).join('')}</div>`
+  ).join('');
+
+  try {
+    const res = await fetch('./menu.json');
+    menuData = await res.json();
+  } catch (e) {
+    // Fallback: данные прямо в коде (пусто — заглушка)
+    menuData = { categories: { ru: [], kz: [] }, items: [] };
+    console.error('Не удалось загрузить menu.json:', e);
+  }
+
+  applyUILang();
+  buildNav();
+  renderFiltered();
+}
+
+init();
+</script>
 </body>
 </html>
