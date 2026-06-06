@@ -760,12 +760,31 @@ installDismiss.addEventListener('click', () => {
 });
 
 // ── OFFLINE ───────────────────────────────────────────────────────────────────
-function updateOnlineStatus() {
-  document.getElementById('offlineBanner').style.display = navigator.onLine ? 'none' : 'block';
+// navigator.onLine ненадёжен при переключении тёмной темы —
+// используем реальный fetch с задержкой
+let offlineTimer;
+
+async function checkRealOnline() {
+  if (!navigator.onLine) {
+    document.getElementById('offlineBanner').style.display = 'block';
+    return;
+  }
+  try {
+    await fetch('./manifest.json?_=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+    document.getElementById('offlineBanner').style.display = 'none';
+  } catch {
+    document.getElementById('offlineBanner').style.display = 'block';
+  }
 }
+
+function updateOnlineStatus() {
+  clearTimeout(offlineTimer);
+  offlineTimer = setTimeout(checkRealOnline, 800);
+}
+
 window.addEventListener('online',  updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
-updateOnlineStatus();
+checkRealOnline();
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {

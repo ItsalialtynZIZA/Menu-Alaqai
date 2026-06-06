@@ -1,4 +1,4 @@
-const CACHE = 'alaqai-v1';
+const CACHE = 'alaqai-v2';
 const STATIC = ['./', './index.html', './menu.json', './manifest.json'];
 
 self.addEventListener('install', e => {
