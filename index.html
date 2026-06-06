@@ -54,7 +54,7 @@
       .search input { background:#1c1c1a !important; color:var(--text) !important; border-color:var(--border) !important; }
       .search input::placeholder { color:#556 !important; }
       .mobile-cat-bar { background:rgba(15,15,14,.96) !important; border-top-color:rgba(255,255,255,.08) !important; }
-
+      .offline-banner { display:block !important; }
       .table-badge { background:#1c1c1a !important; border-color:rgba(255,255,255,.08) !important; color:var(--green) !important; }
       dialog { background:#1c1c1a !important; color:var(--text) !important; border-color:rgba(255,255,255,.1) !important; }
       .modal-close { background:#252523 !important; color:var(--text) !important; }
@@ -65,7 +65,7 @@
     html{scroll-behavior:smooth;}
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 
-
+    .offline-banner{display:none;background:#f59e0b;color:#fff;text-align:center;padding:7px 16px;font-size:13px;font-weight:700;position:sticky;top:0;z-index:100;}
 
     .topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);padding-top:var(--safe-top);}
     .topbar-inner{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
@@ -86,6 +86,13 @@
     .search{flex:1;min-width:0;position:relative;}
     .search input{width:100%;border:1px solid var(--border);border-radius:14px;padding:11px 14px;font-size:16px;outline:none;background:#fff;-webkit-appearance:none;appearance:none;color:var(--text);}
     .search input:focus{border-color:var(--green);}
+    .search-toggle-btn{display:none;border:none;background:var(--green);color:#fff;border-radius:14px;padding:10px 11px;font-size:18px;cursor:pointer;flex-shrink:0;line-height:1;}
+    @media(max-width:480px){
+      .search{display:none;}
+      .search.open{display:block;position:fixed;top:calc(var(--safe-top) + 58px);left:12px;right:12px;z-index:100;}
+      .search.open input{border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+      .search-toggle-btn{display:flex;align-items:center;justify-content:center;}
+    }
     .btn{border:none;background:var(--green);color:#fff;border-radius:14px;padding:11px 14px;font-size:14px;cursor:pointer;transition:background .2s;white-space:nowrap;flex-shrink:0;-webkit-appearance:none;touch-action:manipulation;}
     .btn:active{background:var(--green-dark);}
     @media(hover:hover){.btn:hover{background:var(--green-dark);}}
@@ -198,7 +205,7 @@
 </head>
 <body>
 
-
+<div class="offline-banner" id="offlineBanner">⚠️ Нет подключения к интернету — показываем кешированное меню</div>
 
 <header class="topbar" id="top">
   <div class="topbar-inner">
@@ -236,7 +243,10 @@
       <button class="lang-btn" data-lang="kz" onclick="setLang('kz')">KZ</button>
     </div>
     <div class="controls">
-      <div class="search">
+      <button class="search-toggle-btn" id="searchToggleBtn" aria-label="Поиск">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <div class="search" id="searchWrap">
         <input id="searchInput" type="search" autocomplete="off" autocorrect="off"
                spellcheck="false" placeholder="Поиск блюда..." />
       </div>
@@ -761,7 +771,12 @@ installDismiss.addEventListener('click', () => {
 });
 
 // ── OFFLINE ───────────────────────────────────────────────────────────────────
-
+function updateOnlineStatus() {
+  document.getElementById('offlineBanner').style.display = navigator.onLine ? 'none' : 'block';
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
@@ -797,6 +812,28 @@ document.getElementById('showAllBtn').addEventListener('click', () => {
 });
 
 document.getElementById('searchInput').addEventListener('input', filterMenu);
+
+// ── МОБИЛЬНЫЙ ПОИСК — кнопка-лупа ───────────────────────────────────────────
+const searchToggleBtn = document.getElementById('searchToggleBtn');
+const searchWrap = document.getElementById('searchWrap');
+
+searchToggleBtn.addEventListener('click', () => {
+  const isOpen = searchWrap.classList.toggle('open');
+  if (isOpen) {
+    document.getElementById('searchInput').focus();
+  } else {
+    document.getElementById('searchInput').value = '';
+    searchQuery = '';
+    renderFiltered();
+  }
+});
+
+// Закрыть поиск при клике вне
+document.addEventListener('click', e => {
+  if (!searchWrap.contains(e.target) && e.target !== searchToggleBtn) {
+    searchWrap.classList.remove('open');
+  }
+});
 
 const vp = document.querySelector('meta[name=viewport]');
 document.getElementById('searchInput').addEventListener('focus', () =>
